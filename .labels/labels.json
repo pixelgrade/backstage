@@ -1,0 +1,162 @@
+[
+  {
+    "name": "0.25 pts",
+    "color": "#eecadb"
+  },
+  {
+    "name": "0.5 pts",
+    "color": "#cca7ca"
+  },
+  {
+    "name": "1 point",
+    "color": "#aa71a7"
+  },
+  {
+    "name": "2 points",
+    "color": "#8d478a"
+  },
+  {
+    "name": "3 points",
+    "color": "#650e52"
+  },
+  {
+    "name": "4 points",
+    "color": "#590036"
+  },
+  {
+    "name": "5 points",
+    "color": "#390036"
+  },
+  {
+    "name": "Back-end",
+    "color": "#0052cc"
+  },
+  {
+    "name": "Front-end",
+    "color": "#eb6420"
+  },
+  {
+    "name": "UI / UX",
+    "color": "#0bb5ab"
+  },
+  {
+    "name": "[Docs] Appendix",
+    "color": "#1dae72"
+  },
+  {
+    "name": "[Docs] FAQable",
+    "color": "#10B3B2"
+  },
+  {
+    "name": "[Docs] Incorrect",
+    "color": "#dd1e26"
+  },
+  {
+    "name": "[Docs] Missing",
+    "color": "#0092B0"
+  },
+  {
+    "name": "[Docs] Outdated",
+    "color": "#6A4A3C"
+  },
+  {
+    "name": "[Docs] Tips & Tricks",
+    "color": "#5319e7"
+  },
+  {
+    "name": "[Docs] Unclear",
+    "color": "#ffdf74"
+  },
+  {
+    "name": "[Pri] BLOCKER",
+    "color": "#e84d10"
+  },
+  {
+    "name": "[Pri] Do Later",
+    "color": "#eeeeee"
+  },
+  {
+    "name": "[Pri] High",
+    "color": "#ff9d6c"
+  },
+  {
+    "name": "[Pri] Low",
+    "color": "#fef2c0"
+  },
+  {
+    "name": "[Pri] Normal",
+    "color": "#f9d0c4"
+  },
+  {
+    "name": "[Status] Maybe Later",
+    "color": "#ececec"
+  },
+  {
+    "name": "[Status] Needs Design",
+    "color": "#C0FFF2"
+  },
+  {
+    "name": "[Status] Needs Design Review",
+    "color": "#c9ffc0"
+  },
+  {
+    "name": "[Status] Needs Feedback",
+    "color": "#e4bcfd"
+  },
+  {
+    "name": "[Status] Needs Review",
+    "color": "#fce16c"
+  },
+  {
+    "name": "[Type] Bug",
+    "color": "#fd3c40"
+  },
+  {
+    "name": "[Type] Check",
+    "color": "#006b75"
+  },
+  {
+    "name": "[Type] Discussion",
+    "color": "#fdec05"
+  },
+  {
+    "name": "[Type] Duplicate",
+    "color": "#ededed"
+  },
+  {
+    "name": "[Type] Enhancement",
+    "color": "#1dae72"
+  },
+  {
+    "name": "[Type] Feature",
+    "color": "#1ec669"
+  },
+  {
+    "name": "[Type] Good First Contribution",
+    "color": "#00aadc"
+  },
+  {
+    "name": "[Type] Invalid",
+    "color": "#ededed"
+  },
+  {
+    "name": "[Type] Maintenance",
+    "color": "#5319e7"
+  },
+  {
+    "name": "[Type] Now Broken",
+    "color": "#fb1318"
+  },
+  {
+    "name": "[Type] Question",
+    "color": "#00aadc"
+  },
+  {
+    "name": "[Type] User Feedback",
+    "color": "#00B6CA"
+  },
+  {
+    "name": "[Type] Wont Fix",
+    "color": "#ffffff"
+  }
+]
