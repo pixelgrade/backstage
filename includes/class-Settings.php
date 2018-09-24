@@ -117,17 +117,30 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		) );
 
 		$cmb->add_field( array(
-			'name'             => esc_html__( 'Frontend Button Output', 'cgda' ),
+			'name' => esc_html__( 'Customizer Notice Text', 'cgda' ),
+			'desc' => esc_html__( 'Set the text of notice shown in the Customizer.', 'cgda' ),
+			'id'   => $this->prefix( 'customizer_notice_text' ),
+			'type' => 'text',
+			'default' => esc_html__( 'You can\'t upload images and save settings.', 'cgda' ),
+		) );
+
+		$cmb->add_field( array(
+			'name'             => esc_html__( 'Frontend Button Output Mode', 'cgda' ),
 			'desc'             => esc_html__( 'Here you can decide if you want us to output a button on the frontend with a link to the Customizer, or if you want to do that yourself.', 'cgda' ),
-			'id'               => $this->prefix( 'frontend_button' ),
+			'id'               => $this->prefix( 'frontend_button_mode' ),
 			'type'             => 'select',
 			'show_option_none' => false,
 			'default'          => 'auto',
 			'options'          => array(
 				'auto'   => esc_html__( 'Output a button for me', 'cgda' ),
-				'custom' => esc_html__( 'I will add the link myself', 'cgda' ),
+				'custom' => esc_html__( 'Let me specify the button markup and CSS', 'cgda' ),
+				'self'   => esc_html__( 'I will handle the button myself', 'cgda' ),
 			),
 		) );
+
+		/* ================================
+		 * Fields for auto frontend output.
+		 * ================================ */
 
 		$cmb->add_field( array(
 			'name' => esc_html__( 'Frontend Button Text', 'cgda' ),
@@ -137,7 +150,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			'default' => esc_html__( 'Customize Styles', 'cgda' ),
 			'attributes' => array(
 				'required'               => true, // Will be required only if visible.
-				'data-conditional-id'    => $this->prefix( 'frontend_button' ),
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'auto',
 			),
 		) );
@@ -149,7 +162,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			'default' => '',
 			'attributes' => array(
 				'required'               => false,
-				'data-conditional-id'    => $this->prefix( 'frontend_button' ),
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'auto',
 			),
 		) );
@@ -161,19 +174,69 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			'default' => '',
 			'attributes' => array(
 				'required'               => false,
-				'data-conditional-id'    => $this->prefix( 'frontend_button' ),
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'auto',
 			),
 		) );
+
+		/* ==================================
+		 * Fields for custom frontend output.
+		 * ================================== */
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Custom CSS', 'cgda' ),
+			'desc' => esc_html__( 'Add here the custom CSS you want to output on the frontend of your site. It\'s OK to leave it empty if you have the CSS elsewhere.', 'cgda' ),
+			'id'   => $this->prefix( 'frontend_custom_css' ),
+			'type' => 'textarea_code',
+			'default' => '',
+			'attributes' => array(
+				'required'               => false,
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
+				'data-conditional-value' => 'custom',
+
+				'data-codeeditor' => json_encode( array(
+					'codemirror' => array(
+						'mode' => 'text/css',
+					),
+				) ),
+			),
+		) );
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Custom HTML', 'cgda' ),
+			'desc' => sprintf( esc_html__( 'Add here the custom HTML you want to output on the frontend of your site. You must include the %s content tag so it can be replaced with the URL for Customizer access.', 'cgda' ), '<code>%customizer_link%</code>'),
+			'id'   => $this->prefix( 'frontend_custom_html' ),
+			'type' => 'textarea_code',
+			'default' => '<div class="cgda-customizer-access-wrapper">
+	<div class="cgda-customizer-access-button">
+		<a class="cgda-customizer-access-link" href="%customizer_link%">Customize Styles</a>
+	</div>
+</div>',
+			'attributes' => array(
+				'required'               => true, // Will be required only if visible.
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
+				'data-conditional-value' => 'custom',
+
+				'data-codeeditor' => json_encode( array(
+					'codemirror' => array(
+						'mode' => 'text/html',
+					),
+				) ),
+			),
+		) );
+
+		/* ================================
+		 * Fields for self frontend output.
+		 * ================================ */
+
 		$cmb->add_field( array(
 			'name' => esc_html__( 'Custom Frontend Button Instructions', 'cgda' ),
-			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You have a localized JS object called "cgda" with the needed URL, and you can also use the "cgda_get_customizer_link()" PHP function.', 'cgda' ),
+			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You have access to a localized JavaScript object called "cgda" with the needed URL, and you can also use the "cgda_get_customizer_link()" PHP function.', 'cgda' ),
 			'id'   => $this->prefix( 'frontend_custom_button_instructions' ),
 			'type' => 'title',
 			'attributes' => array(
 				'required'               => false,
-				'data-conditional-id'    => $this->prefix( 'frontend_button' ),
-				'data-conditional-value' => 'custom',
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
+				'data-conditional-value' => 'self',
 			),
 		) );
 

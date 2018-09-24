@@ -82,7 +82,12 @@ class CGDA extends CGDA_Singleton_Registry {
 		/*
 		 * Scripts enqueued in the frontend.
 		 */
-		add_action( 'wp_head', array( $this, 'js_variables' ) );
+		add_action( 'wp_head', array( $this, 'frontend_js_variables' ) );
+
+		/*
+		 * Markup outputted in the frontend.
+		 */
+		add_action( 'wp_footer', array( $this, 'frontend_output' ) );
 	}
 
 	public function wc_prevent_admin_access( $default ) {
@@ -92,7 +97,7 @@ class CGDA extends CGDA_Singleton_Registry {
 	public function customize_controls_templates() { ?>
 		<script type="text/html" id="tmpl-customizer-preview-for-demo-notice">
 			<div id="customizer-preview-notice" class="accordion-section customize-info">
-				<div class="accordion-section-title"><span class="preview-notice">{{ data.preview_notice || "You can't upload images and save settings." }}</span></div>
+				<div class="accordion-section-title"><span class="preview-notice">{{ data.preview_notice || "<?php esc_html_e( 'You can\'t upload images and save settings.', 'cgda'); ?>" }}</span></div>
 			</div>
 		</script>
 		<script type="text/html" id="tmpl-customizer-preview-for-demo-button">
@@ -244,7 +249,7 @@ class CGDA extends CGDA_Singleton_Registry {
 				'button_text'    => esc_attr( CGDA_Plugin()->settings->get_option( 'customizer_back_button_text' ) ),
 				'button_link'    => esc_url( ! empty( $_GET['url'] ) ? $_GET['url'] : get_home_url() ),
 				'button_target'  => esc_attr( '' ),
-				'preview_notice' => esc_html( "You can't upload images and save settings." ),
+				'preview_notice' => CGDA_Plugin()->settings->get_option( 'customizer_notice_text' ),
 			) );
 		}
 	}
@@ -262,10 +267,184 @@ class CGDA extends CGDA_Singleton_Registry {
 		}
 	}
 
-	public function js_variables() { ?>
+	/**
+	 * Output an inline JS in <head> with the global variables, if that is the case.
+	 */
+	public function frontend_js_variables() {
+		// We will only output if the button frontend mode is set to 'self' meaning the site administrator is handling the output.
+		if ( 'self' !== CGDA_Plugin()->settings->get_option( 'frontend_button_mode' ) ) {
+			return;
+		}
+
+		$data = array( 'customizerLink' => cgda_get_customizer_link(), );
+
+		/**
+		 * Filters the data we localize on the frontend.
+		 *
+		 * @param array $data
+		 */
+		$data = apply_filters( 'cgda_frontend_localized_data', $data );
+
+		// Make sure things are sane.
+		if ( empty( $data ) || ! is_array( $data ) ) {
+			$data = array();
+		}
+		?>
 		<script type="text/javascript">
-            var cgda = <?php echo json_encode( array( 'customizerLink' => cgda_get_customizer_link(), ) ); ?>;
-		</script><?php
+            var cgda = <?php echo json_encode( $data ); ?>;
+		</script>
+	<?php }
+
+	/**
+	 * Determine if we should output the frontend markup.
+	 *
+	 * @return bool
+	 */
+	public function frontend_should_output() {
+		// We will not show for regular logged in users.
+		if ( is_user_logged_in() && ! $this->is_customizer_user() ) {
+			return false;
+		}
+
+		// We will not show the output in the Customizer preview
+		if ( is_customize_preview() ) {
+			return false;
+		}
+
+		// We will only output if the button frontend mode is not set to 'self'.
+		if ( 'self' === CGDA_Plugin()->settings->get_option( 'frontend_button_mode' ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Output the frontend button markup, if that is the case.
+	 */
+	public function frontend_output() {
+		// Bail if we are not supposed to output.
+		if ( true !== apply_filters( 'cgda_frontend_should_output', $this->frontend_should_output() ) ) {
+			return;
+		}
+
+		do_action( 'cgda_before_frontend_output' );
+
+		// First output the CSS.
+		echo $this->frontend_css();
+
+		// Second, output the HTML.
+		echo $this->frontend_html();
+
+		do_action( 'cgda_after_frontend_output' );
+	}
+
+	protected function frontend_html() {
+		$html = '';
+		if ( 'custom' === CGDA_Plugin()->settings->get_option( 'frontend_button_mode' ) ) {
+			$html .= CGDA_Plugin()->settings->get_option( 'frontend_custom_html' );
+
+			// We need to parse the %customizer_link% content tag and replace it with the appropriate URL.
+			$html = str_replace( '%customizer_link%', cgda_get_customizer_link(), $html );
+		} else {
+			$wrapper_classes = [ 'cgda-customizer-access-wrapper' ];
+			$additional_wrapper_classes = cgda_maybe_explode_list( CGDA_Plugin()->settings->get_option( 'frontend_button_wrapper_classes' ) );
+			if ( ! empty( $additional_wrapper_classes ) ) {
+				$wrapper_classes = array_merge( $wrapper_classes, $additional_wrapper_classes );
+			}
+			/**
+			 * Filters the list of CSS classes for the button wrapper.
+			 *
+			 * @param array $classes An array of classes.
+			 */
+			$wrapper_classes = apply_filters( 'cgda_frontend_button_wrapper_classes', $wrapper_classes );
+
+			$button_classes = [ 'cgda-customizer-access-button' ];
+			$additional_button_classes = cgda_maybe_explode_list( CGDA_Plugin()->settings->get_option( 'frontend_button_classes' ) );
+			if ( ! empty( $additional_button_classes ) ) {
+				$button_classes = array_merge( $button_classes, $additional_button_classes );
+			}
+			/**
+			 * Filters the list of CSS classes for the button.
+			 *
+			 * @param array $classes An array of classes.
+			 */
+			$button_classes = apply_filters( 'cgda_frontend_button_classes', $button_classes );
+
+			$html .= '<div ' . cgda_css_class( $wrapper_classes ) . '>' . PHP_EOL;
+			$html .= '<div ' . cgda_css_class( $button_classes ) . '>' . PHP_EOL;
+
+			$html .= '<a class="cgda-customizer-access-link" href="' . esc_url( cgda_get_customizer_link() ) . '">' . CGDA_Plugin()->settings->get_option( 'frontend_button_text' ) . '</a>' . PHP_EOL;
+
+			$html .= '</div>' . PHP_EOL;
+			$html .= '</div>' . PHP_EOL;
+		}
+
+		/**
+		 * Filters the frontend html, in case the site admin doesn't handle it on it's own.
+		 *
+		 * @param string $html
+		 */
+		return apply_filters( 'cgda_frontend_html', $html );
+	}
+
+	protected function frontend_css() {
+		$css = '';
+		if ( 'custom' === CGDA_Plugin()->settings->get_option( 'frontend_button_mode' ) ) {
+			$css .= CGDA_Plugin()->settings->get_option( 'frontend_custom_css' );
+		} else {
+			$css .= '
+	.cgda-customizer-access-wrapper {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		z-index: 1000;
+	}
+	.cgda-customizer-access-button {
+		padding: 10px 14px;
+		font-size: 16px;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		float: right;
+		background-color: #0074a2;
+	}
+	.cgda-customizer-access-button:hover {
+		background-color: #1e8cbe;
+	}
+	.cgda-customizer-access-button a {
+		color: #fff;
+		font-weight: normal !important;
+		-webkit-font-smoothing: subpixel-antialiased !important;
+		border-bottom: none; 
+		text-decoration: none;
+	}
+	.cgda-customizer-access-button a:before {
+		content: "";
+		position: relative;
+		top: 1px;
+		display: inline-block;
+		height: 17px;
+		width: 17px;
+		margin-right: 8px;
+		background-image: url(https://demo.thethemefoundry.com/wp-content/plugins/customizer-demo/images/brush.svg);
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+';
+		}
+
+		/**
+		 * Filters the frontend CSS, in case the site admin doesn't handle it on it's own.
+		 *
+		 * @param string $html
+		 */
+		$css = apply_filters( 'cgda_frontend_css', $css );
+
+		// Wrap the CSS rules, it is not already wrapped.
+		if ( ! empty( $css ) && false === strpos( $css, '</style>' ) ) {
+			$css = '<style id="cgda-frontend-css" type="text/css">' . $css . '</style>' . PHP_EOL;
+		}
+
+		return $css;
 	}
 }
 

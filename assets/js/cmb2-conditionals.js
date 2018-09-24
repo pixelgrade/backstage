@@ -31,7 +31,7 @@ jQuery(document).ready(function($) {
 
 			$element
 				.on('change', function(evt){
-					if($element.attr('type') == 'checkbox') {
+					if($element.attr('type') === 'checkbox') {
 						var checked = $element.prop('checked');
 						CMB2ConditionalToggleRows('[data-conditional-id="' + id + '"]', checked);
 						CMB2ConditionalToggleRows('[data-conditional-id="' + id + '"][data-conditional-value="on"]', checked);
@@ -88,8 +88,27 @@ jQuery(document).ready(function($) {
 			$e.prop('required', showOrHide && $e.data('conditional-required'));
 
 			$e.parents('.cmb-row:first').toggle(showOrHide);
+
+			// For textarea code (CodeMirror) we need to do a refresh when we show it.
+			if ( true === showOrHide ) {
+                CMB2ConditionalMaybeInitializeCodeEditor( $e );
+            }
 		});
 	}
+
+	function CMB2ConditionalMaybeInitializeCodeEditor( $element ) {
+        if ( ! window.CMB2.codeEditorArgs || ! wp || ! wp.codeEditor || ! $element.length ) {
+            return;
+        }
+
+        if ( ! $element.hasClass( 'cmb2-textarea-code' ) || $element.hasClass('disable-codemirror') ) {
+            return;
+        }
+
+        $element.siblings('.CodeMirror').each(function(i, el){
+            el.CodeMirror.refresh();
+        });
+    }
 
 	CMB2ConditionalsInit('.option-cgda_options');
 });

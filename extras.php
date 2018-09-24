@@ -351,3 +351,110 @@ function cgda_is_assoc( $array ) {
 	// not be associative (e.g. the keys array looked like {0:0, 1:1...}).
 	return array_keys( $keys ) !== $keys;
 }
+
+/**
+ * Attempt to split a string by whitespaces and return the parts as an array.
+ * If not a string or no whitespaces present, just returns the value.
+ *
+ * @param mixed $value
+ *
+ * @return array|false|string[]
+ */
+function cgda_maybe_split_by_whitespace( $value ) {
+	if ( ! is_string( $value ) ) {
+		return $value;
+	}
+
+	return preg_split( '#[\s][\s]*#', $value, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE );
+}
+
+/**
+ * Given a string, treat it as a (comma separated by default) list and return the array with the items
+ *
+ * @param mixed $str
+ * @param string $delimiter Optional. The delimiter to user.
+ *
+ * @return array
+ */
+function cgda_maybe_explode_list( $str, $delimiter = ',' ) {
+	// If by any chance we are given an array, just return it
+	if ( is_array( $str ) ) {
+		return $str;
+	}
+
+	// Anything else we coerce to a string
+	if ( ! is_string( $str ) ) {
+		$str = (string) $str;
+	}
+
+	// Make sure we trim it
+	$str = trim( $str );
+
+	// Bail on empty string
+	if ( empty( $str ) ) {
+		return array();
+	}
+
+	// Return the whole string as an element if the delimiter is missing
+	if ( false === strpos( $str, $delimiter ) ) {
+		return array( $str );
+	}
+
+	// Explode it and return it
+	return explode( $delimiter, str_replace( ' ', '', $str ) );
+}
+
+/**
+ * Retrive the class attribute given some classes.
+ *
+ * @param string|array $class Optional. One or more classes to add to the class list.
+ * @param string|array $location Optional. The place (template) where the classes are displayed. This is a hint for filters.
+ * @param string       $prefix Optional. Prefix to prepend to all of the provided classes
+ * @param string       $suffix Optional. Suffix to append to all of the provided classes
+ * @return string
+ */
+function cgda_css_class( $class = '', $location = '', $prefix = '', $suffix = '' ) {
+	// Separates classes with a single space, collates classes for element
+	return 'class="' . esc_attr( join( ' ', cgda_get_css_class( $class, $location ) ) ) . '"';
+}
+
+/**
+ * Retrieve the classes for a element as an array.
+ *
+ * @param string|array $class Optional. One or more classes to add to the class list.
+ * @param string|array $location Optional. The place (template) where the classes are displayed. This is a hint for filters.
+ * @param string       $prefix Optional. Prefix to prepend to all of the provided classes
+ * @param string       $suffix Optional. Suffix to append to all of the provided classes
+ *
+ * @return array Array of classes.
+ */
+function cgda_get_css_class( $class = '', $location = '', $prefix = '', $suffix = '' ) {
+	$classes = array();
+
+	if ( ! empty( $class ) ) {
+		$class = cgda_maybe_split_by_whitespace( $class );
+
+		// If we have a prefix then we need to add it to every class
+		if ( ! empty( $prefix ) && is_string( $prefix ) ) {
+			foreach ( $class as $key => $value ) {
+				$class[ $key ] = $prefix . $value;
+			}
+		}
+
+		// If we have a suffix then we need to add it to every class
+		if ( ! empty( $suffix ) && is_string( $suffix ) ) {
+			foreach ( $class as $key => $value ) {
+				$class[ $key ] = $value . $suffix;
+			}
+		}
+
+		$classes = array_merge( $classes, $class );
+	} else {
+		// Ensure that we always coerce class to being an array.
+		$class = array();
+	}
+
+	$classes = array_map( 'esc_attr', $classes );
+
+	return array_unique( $classes );
+} // function
