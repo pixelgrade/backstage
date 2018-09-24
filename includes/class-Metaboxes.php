@@ -1,6 +1,20 @@
 <?php
 /**
+ * Document for class CGDA_Metaboxes.
+ *
+ * @package Customizer-Guest-Demo-Access
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+/**
  * Ensures the metaboxes logic is loaded and ready for use (CMB2 right now).
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
  */
 class CGDA_Metaboxes extends CGDA_Singleton_Registry {
 

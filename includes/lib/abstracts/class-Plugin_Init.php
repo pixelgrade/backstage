@@ -1,6 +1,8 @@
 <?php
 /**
- * Document for class CGDA_Plugin_Init.
+ * Document for abstract class CGDA_Plugin_Init.
+ *
+ * @package Customizer-Guest-Demo-Access
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -9,6 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Abstract class to check php and plugin version, and do updates if necessary.
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
  */
 abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
 
@@ -72,10 +78,10 @@ abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
 		);
 
 		$html = '<div class="updated fade">' .
-		        __( 'Error: plugin "' . $this->plugin_name . '" requires a newer version of PHP to be running.', 'cgda' ) .
-		        '<br/>' . __( 'Minimal version of PHP required: ', 'cgda' ) . '<strong>' . $this->minimalRequiredPhpVersion . '</strong>
-				<br/>' . __( 'Your server\'s PHP version: ', 'cgda' ) . '<strong>' . phpversion() . '</strong>
-				</div>';
+		        sprintf( esc_html__( 'Error: plugin "%s" requires a newer version of PHP to be running.', 'cgda' ), $this->plugin_name ) .
+		        '<br/>' . sprintf( esc_html__( 'Minimal version of PHP required: %s', 'cgda' ), '<strong>' . $this->minimalRequiredPhpVersion . '</strong>' ) .
+				'<br/>' . sprintf( __( 'Your server\'s PHP version: %s', 'cgda' ) . '<strong>' . phpversion() . '</strong>' ) .
+				'</div>';
 		echo wp_kses( $html, $allowed );
 	}
 

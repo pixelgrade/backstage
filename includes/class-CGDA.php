@@ -1,10 +1,8 @@
 <?php
 /**
- * This is the class that handles the overall logic for the Customizer Guest Demo Access.
+ * Document for class CGDA.
  *
- * @see         https://pixelgrade.com
- * @author      Pixelgrade
- * @since       1.0.0
+ * @package Customizer-Guest-Demo-Access
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,6 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'CGDA' ) ) :
 
+/**
+ * This is the class that handles the overall logic for the Customizer Guest Demo Access.
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
+ */
 class CGDA extends CGDA_Singleton_Registry {
 
 	/**

@@ -1,6 +1,8 @@
 <?php
 /**
- * This is the abstract class for singletons (a singleton registry).
+ * Document for abstract class CGDA_Singleton_Registry.
+ *
+ * @package Customizer-Guest-Demo-Access
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -8,11 +10,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * @class CGDA_Singleton_Registry
+ * This is the abstract class for singletons (a singleton registry).
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
  */
 abstract class CGDA_Singleton_Registry {
+
+	/**
+	 * The instances list.
+	 *
+	 * @var array
+	 */
 	public static $_instances = array();
 
+	/**
+	 * Get an instance of a class.
+	 *
+	 * @param string $arg
+	 *
+	 * @return mixed
+	 * @throws ReflectionException
+	 */
 	public static function getInstance( $arg = '' ) {
 
 		// Get classname
@@ -73,6 +93,14 @@ abstract class CGDA_Singleton_Registry {
 		return self::$_instances[ $key ];
 	}
 
+	/**
+	 * Get the singleton key of a certain class.
+	 *
+	 * @param $class
+	 * @param $args
+	 *
+	 * @return mixed
+	 */
 	public static function get_singleton_key( $class, $args ) {
 
 		// Only return the classname. This behavior can be modified in child classes
@@ -87,7 +115,7 @@ abstract class CGDA_Singleton_Registry {
 	 * @since 1.0.0
 	 */
 	public function __clone() {
-		cgda_doing_it_wrong( __FUNCTION__,esc_html( __( 'Cloning is forbidden.', 'cgda' ) ), '1.0.0' );
+		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Cloning is forbidden.', 'cgda' ), '1.0.0' );
 	} // End __clone ()
 
 	/**
@@ -96,12 +124,20 @@ abstract class CGDA_Singleton_Registry {
 	 * @since 1.0.0
 	 */
 	public function __wakeup() {
-		cgda_doing_it_wrong( __FUNCTION__, esc_html( __( 'Unserializing instances of this class is forbidden.', 'cgda' ) ),  '1.0.0' );
+		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Unserializing instances of this class is forbidden.', 'cgda' ), '1.0.0' );
 	} // End __wakeup ()
 }
 
-// This one is for pre-PHP 5.3
+// This one is for pre-PHP 5.3 PHP versions.
 if ( ! function_exists( 'get_called_class' ) ) {
+
+	/**
+	 * Gets the name of the class the static method is called in.
+	 *
+	 * @see http://php.net/manual/ro/function.get-called-class.php
+	 *
+	 * @return mixed
+	 */
 	function get_called_class() {
 		$bt    = debug_backtrace();
 		$lines = file( $bt[1]['file'] );

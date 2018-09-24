@@ -1,6 +1,20 @@
 <?php
 /**
- * Style Manager settings page logic.
+ * Document for class CGDA_Settings.
+ *
+ * @package Customizer-Guest-Demo-Access
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Class to handle the settings page logic.
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
  */
 class CGDA_Settings extends CGDA_Singleton_Registry {
 
@@ -235,6 +249,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 *
 	 * @param string $id
 	 * @param mixed $default Optional. The default value in case the option wasn't saved.
+	 * @return mixed
 	 */
 	public function get_option( $id, $default = false ) {
 		$options = get_option( $this->key );

@@ -1,9 +1,22 @@
 <?php
+/**
+ * Document for class CGDA_Plugin.
+ *
+ * @package Customizer-Guest-Demo-Access
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The main plugin class.
  *
  * This loads all the components that make up the plugin.
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
  */
 final class CGDA_Plugin extends CGDA_Plugin_Init {
 
@@ -121,19 +134,19 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	private function init() {
 
 		/* Initialize the metaboxes logic (CMB2). */
-		require_once( $this->plugin_basepath . 'includes/class-Metaboxes.php' );
+		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-Metaboxes.php' );
 		if ( is_null( $this->metaboxes ) ) {
 			$this->metaboxes = CGDA_Metaboxes::getInstance( 'cgda' );
 		}
 
 		/* Initialize the settings page. */
-		require_once( $this->plugin_basepath . 'includes/class-Settings.php' );
+		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-Settings.php' );
 		if ( is_null( $this->settings ) ) {
 			$this->settings = CGDA_Settings::getInstance( $this );
 		}
 
 		/* Initialize the core logic. */
-		require_once( $this->plugin_basepath . 'includes/class-CGDA.php' );
+		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-CGDA.php' );
 		if ( is_null( $this->cgda ) ) {
 			$this->cgda = CGDA::getInstance( $this );
 		}
@@ -173,7 +186,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		if ( ! get_role( 'cgda-customizer-preview' ) ) {
 
 			// Customizer access user capabilities
-			$user_capabilities = apply_filters( 'customizer_preview_user_capabilities', array(
+			$user_capabilities = apply_filters( 'cgda_user_capabilities', array(
 				'read'               => true,
 				'edit_posts'         => false,
 				'delete_posts'       => false,
@@ -195,7 +208,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	 */
 	static protected function create_customizer_user() {
 		if ( ! username_exists( 'cgda_customizer_user' ) ) {
-
+			// Generate a random password. This is not actually used anywhere, so no need to know it.
 			$password = wp_generate_password();
 
 			$new_user_data = array(

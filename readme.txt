@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html 
 
-Allow your visitors to access the Customizer and play with it.
+Allow your visitors to access the Customizer of a demo site and play with it.
 
 == Description ==
 
@@ -35,17 +35,13 @@ If Github is not your thing but you are passionate about Customizer Guest Demo A
 
 == Frequently Asked Questions ==
 
-= Is there a way to reset the Customizer options to their default value? =
-Reset buttons are available for all the options or for individual sections or panels.
-This is mostly a development tool, thus it is disabled by default.
-To enable them simply go to Dashboard -> Appearance -> Style Manager and check "Enable Reset Buttons"
-
 == Credits ==
 
 * [CMB2](https://github.com/CMB2/CMB2) Metaboxes, custom fields library - License: GPLv2 or later
+* [CMB2 Conditionals](https://github.com/jcchavezs/cmb2-conditionals/) plugin for CMB2 - License: GPLv2 or later
 
 == Changelog ==
 
 = 1.0 =
-* 2018-08-18
+* 2018-09-25
 * Initial release

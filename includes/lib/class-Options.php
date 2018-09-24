@@ -1,6 +1,8 @@
 <?php
 /**
  * Document for class CGDA_Options.
+ *
+ * @package Customizer-Guest-Demo-Access
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -9,6 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Class to manage values saved as options (in the wp_options DB table).
+ *
+ * @see         https://pixelgrade.com
+ * @author      Pixelgrade
+ * @since       1.0.0
  */
 class CGDA_Options extends CGDA_Singleton_Registry {
 

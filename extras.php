@@ -1,8 +1,8 @@
 <?php
 /**
- * Extra File
+ * Extras File
  *
- * Contains extra functions
+ * Contains extra (helper) functions.
  *
  * @package Customizer-Guest-Demo-Access
  */

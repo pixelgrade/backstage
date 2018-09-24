@@ -33,7 +33,6 @@ require_once( plugin_dir_path( __FILE__ ) . 'extras.php' );
  * @return CGDA_Plugin CGDA_Plugin instance.
  */
 function CGDA_Plugin() {
-
 	require_once( plugin_dir_path( __FILE__ ) . 'includes/class-CGDA_Plugin.php' );
 
 	return CGDA_Plugin::getInstance( __FILE__, '1.0.0' );
