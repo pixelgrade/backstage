@@ -230,7 +230,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 
 		$cmb->add_field( array(
 			'name' => esc_html__( 'Custom Frontend Button Instructions', 'cgda' ),
-			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You have access to a localized JavaScript object called "cgda" with the needed URL, and you can also use the "cgda_get_customizer_link()" PHP function.', 'cgda' ),
+			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You use the "cgda_get_customizer_link()" PHP function to get the link to the Customizer. Output it directly or send it to JS via a localized variable.', 'cgda' ),
 			'id'   => $this->prefix( 'frontend_custom_button_instructions' ),
 			'type' => 'title',
 			'attributes' => array(

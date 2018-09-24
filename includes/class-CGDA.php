@@ -57,8 +57,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		add_action( 'plugins_loaded', array( $this, 'show_customizer' ), 1 );
 
 		// Disable wp-admin access.
-		add_action( 'init', array( $this, 'clear_user_auth' ) );
-		add_action( 'admin_init', array( $this, 'clear_user_auth' ) );
+		// We need to hook late so we can let WordPress handle 404 and such.
+		add_action( 'wp', array( $this, 'clear_user_auth' ) );
+//		add_action( 'admin_init', array( $this, 'clear_user_auth' ) );
 		add_filter( 'woocommerce_prevent_admin_access', array( $this, 'wc_prevent_admin_access' ) );
 
 		// Remove Customizer Ajax Save Action
@@ -66,8 +67,6 @@ class CGDA extends CGDA_Singleton_Registry {
 
 		// Prevent Changeset Save
 		add_filter( 'customize_changeset_save_data', array( $this, 'prevent_changeset_save' ), 50, 2 );
-		// Add a JS to display a notification
-		add_action( 'customize_controls_print_footer_scripts', array( $this, 'prevent_changeset_save_notification' ), 100 );
 
 		// Remove the switch theme panel from the Customizer.
 		add_action( 'customize_register', array( $this, 'remove_switch_theme_panel' ), 12 );
@@ -80,11 +79,6 @@ class CGDA extends CGDA_Singleton_Registry {
 		add_action( 'customize_controls_print_footer_scripts', array( $this, 'customize_controls_templates' ) );
 
 		/*
-		 * Scripts enqueued in the frontend.
-		 */
-		add_action( 'wp_head', array( $this, 'frontend_js_variables' ) );
-
-		/*
 		 * Markup outputted in the frontend.
 		 */
 		add_action( 'wp_footer', array( $this, 'frontend_output' ) );
@@ -94,22 +88,31 @@ class CGDA extends CGDA_Singleton_Registry {
 		return ( is_customize_preview() && $this->is_customizer_user() ) ? false : $default;
 	}
 
+	/**
+	 * Print the Customizer templates used for button and notice.
+	 */
 	public function customize_controls_templates() { ?>
-		<script type="text/html" id="tmpl-customizer-preview-for-demo-notice">
+		<script type="text/html" id="tmpl-cgda-customizer-preview-notice">
 			<div id="customizer-preview-notice" class="accordion-section customize-info">
 				<div class="accordion-section-title"><span class="preview-notice">{{ data.preview_notice || "<?php esc_html_e( 'You can\'t upload images and save settings.', 'cgda'); ?>" }}</span></div>
 			</div>
 		</script>
-		<script type="text/html" id="tmpl-customizer-preview-for-demo-button">
+		<script type="text/html" id="tmpl-cgda-customizer-preview-button">
 			<a class="button button-primary" target="{{ data.button_target }}" href="{{ data.button_link }}">{{ data.button_text }}</a>
 		</script>
 		<?php
 	}
 
-	// Logout User
+	/**
+	 * Logout the pseudo-guest user.
+	 */
 	public function clear_user_auth() {
 		// If one is a customizer user and navigates away from it, we will log him out.
-		if ( ! defined( 'DOING_AJAX' ) && ! is_customize_preview() && $this->is_customizer_user() ) {
+		if ( ! defined( 'DOING_AJAX' ) &&
+		     $this->is_customizer_user() &&
+		     ! is_customize_preview() &&
+		     ! is_404() &&
+		     ! ( is_admin() && 'customize.php' == basename( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) ) ) ) {
 			wp_logout();
 			wp_safe_redirect( esc_url( home_url( '/' ) ) );
 			die();
@@ -162,7 +165,39 @@ class CGDA extends CGDA_Singleton_Registry {
 		if ( $this->is_customizer_user() ) {
 			global $wp_customize;
 			remove_action( 'wp_ajax_customize_save', array( $wp_customize, 'save' ) );
+			add_action( 'wp_ajax_customize_save', array( $this, 'mock_customize_save' ) );
 		}
+	}
+
+	public function mock_customize_save() {
+		$response = array(
+			'autosave' => false,
+			'changeset_status' => 'publish',
+			'setting_validities' => array(),
+		);
+
+		$response['next_changeset_uuid'] = wp_generate_uuid4();
+
+		if ( ! empty( $_POST['customize_changeset_autosave'] ) ) {
+			$response['autosave'] = true;
+		}
+
+		// Handle the settings
+		if ( ! empty( $_POST['customize_changeset_data'] ) ) {
+			$input_changeset_data = json_decode( wp_unslash( $_POST['customize_changeset_data'] ), true );
+			if ( ! is_array( $input_changeset_data ) ) {
+				wp_send_json_error( 'invalid_customize_changeset_data' );
+			}
+		} else {
+			$input_changeset_data = array();
+		}
+
+		// Every setting we receive is valid :)
+		foreach ( $input_changeset_data as $setting_id => $value ) {
+			$response['setting_validities'][ $setting_id ] = true;
+		}
+
+		wp_send_json_success( $response );
 	}
 
 	/**
@@ -179,23 +214,6 @@ class CGDA extends CGDA_Singleton_Registry {
 		}
 
 		return $data;
-	}
-
-	/**
-	 *
-	 */
-	public function prevent_changeset_save_notification() {
-		if ( $this->is_customizer_user() ) { ?>
-			<script type="application/javascript">
-                (function ($, exports, wp) {
-                    'use strict';
-                    // when the customizer is ready add our notification
-                    wp.customize.bind('ready', function () {
-
-                    });
-                })(jQuery, window, wp);
-			</script>
-		<?php }
 	}
 
 	/**
@@ -257,8 +275,6 @@ class CGDA extends CGDA_Singleton_Registry {
 	/**
 	 * Remove the switch/preview theme panel.
 	 *
-	 * @since 1.0.0
-	 *
 	 * @param WP_Customize_Manager $wp_customize
 	 */
 	public function remove_switch_theme_panel( $wp_customize ) {
@@ -266,34 +282,6 @@ class CGDA extends CGDA_Singleton_Registry {
 			$wp_customize->remove_panel( 'themes' );
 		}
 	}
-
-	/**
-	 * Output an inline JS in <head> with the global variables, if that is the case.
-	 */
-	public function frontend_js_variables() {
-		// We will only output if the button frontend mode is set to 'self' meaning the site administrator is handling the output.
-		if ( 'self' !== CGDA_Plugin()->settings->get_option( 'frontend_button_mode' ) ) {
-			return;
-		}
-
-		$data = array( 'customizerLink' => cgda_get_customizer_link(), );
-
-		/**
-		 * Filters the data we localize on the frontend.
-		 *
-		 * @param array $data
-		 */
-		$data = apply_filters( 'cgda_frontend_localized_data', $data );
-
-		// Make sure things are sane.
-		if ( empty( $data ) || ! is_array( $data ) ) {
-			$data = array();
-		}
-		?>
-		<script type="text/javascript">
-            var cgda = <?php echo json_encode( $data ); ?>;
-		</script>
-	<?php }
 
 	/**
 	 * Determine if we should output the frontend markup.
