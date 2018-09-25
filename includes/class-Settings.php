@@ -22,7 +22,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
  	 * Option key, and, at the same time, option page slug
  	 * @var string
  	 */
-	protected $key = null;
+	protected static $key = null;
 
 	/**
 	 * Settings Page title
@@ -47,7 +47,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 */
 	protected function __construct() {
 
-		$this->key = $this->prefix('options' );
+		self::$key = $this->prefix('options' );
 
 		// Set our settings page title.
 		$this->title = esc_html__( 'Customizer Guest Demo Access Setup', 'cgda' );
@@ -64,7 +64,11 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'cmb2_admin_init', array( $this, 'cmb2_init' ) );
 
-		add_action( 'load-appearance_page_' . $this->key, array( $this, 'register_admin_scripts' ) );
+		// For when the plugin is used on a per site basis
+		add_action( 'load-appearance_page_' . self::$key, array( $this, 'register_admin_scripts' ) );
+		// For when the plugin is network activated
+		add_action( 'load-settings_page_' . self::$key, array( $this, 'register_admin_scripts' ) );
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 	}
 
@@ -83,19 +87,34 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 * @since  1.0.0
 	 */
 	public function cmb2_init() {
+		// If we are in a multisite context and the plugin is network activated (rather than on individual blogs in the network),
+		// We will only add a network-wide settings page.
 
-		$cmb = new_cmb2_box( array(
+		$box_args = array(
 			'id'           => $this->prefix( 'cgda_setup_page' ),
 			'title'        => $this->title,
 			'desc'         => 'description',
 			'object_types' => array( 'options-page' ),
-			'option_key'   => $this->key, // The option key and admin menu page slug.
+			'option_key'   => self::$key, // The option key and admin menu page slug.
 			'menu_title'   => esc_html__( 'Customizer Guest Access', 'cgda' ),
-			'parent_slug'  => 'themes.php', // Make options page a submenu item of the themes menu.
-			'capability'   => 'manage_options',
 			'autoload'     => true,
 			'show_in_rest' => false,
-		) );
+		);
+
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
+			$box_args['admin_menu_hook'] = 'network_admin_menu'; // 'network_admin_menu' to add network-level options page.
+			$box_args['parent_slug'] = 'settings.php'; // Make options page a submenu item of the settings menu.
+		} else {
+			$box_args['parent_slug'] = 'themes.php'; // Make options page a submenu item of the themes menu.
+			$box_args['capability'] = 'manage_options';
+		}
+
+
+		$cmb = new_cmb2_box( apply_filters( 'cgda_cmb2_box_args', $box_args ) );
 
 		$cmb->add_field( array(
 			'name' => esc_html__( 'URL Auto-login Key', 'cgda' ),
@@ -117,11 +136,33 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		) );
 
 		$cmb->add_field( array(
+			'name' => esc_html__( 'Customizer Notice Style', 'cgda' ),
+			'desc' => esc_html__( 'Set the style/type of the Customizer notice. If "Custom", you can target the notification with the ".notice-cgda-custom" CSS selector.', 'cgda' ),
+			'id'   => $this->prefix( 'customizer_notice_type' ),
+			'type' => 'select',
+			'default' => 'info',
+			'options' => array(
+				'info'        => esc_html__( 'Info', 'cgda' ),
+				'warning'     => esc_html__( 'Warning', 'cgda' ),
+				'success'     => esc_html__( 'Success', 'cgda' ),
+				'error'       => esc_html__( 'Error', 'cgda' ),
+				'cgda-custom' => esc_html__( 'Custom', 'cgda' ),
+			),
+		) );
+
+		$cmb->add_field( array(
 			'name' => esc_html__( 'Customizer Notice Text', 'cgda' ),
-			'desc' => esc_html__( 'Set the text of notice shown in the Customizer.', 'cgda' ),
+			'desc' => esc_html__( 'Set the text of the Customizer notice. Leave empty if you don\'t want to show a notification.', 'cgda' ),
 			'id'   => $this->prefix( 'customizer_notice_text' ),
-			'type' => 'text',
-			'default' => esc_html__( 'You can\'t upload images and save settings.', 'cgda' ),
+			'type' => 'textarea_code',
+			'default' => wp_kses_post( __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'cgda' ) ),
+			'attributes' => array(
+				'data-codeeditor' => json_encode( array(
+					'codemirror' => array(
+						'mode' => 'text/html',
+					),
+				) ),
+			),
 		) );
 
 		$cmb->add_field( array(
@@ -315,7 +356,12 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 * @return mixed
 	 */
 	public function get_option( $id, $default = false ) {
-		$options = get_option( $this->key );
+		if ( function_exists( 'cmb2_get_option' ) ) {
+			// Use cmb2_get_option as it passes through some key filters.
+			return cmb2_get_option( self::$key, $id, $default );
+		}
+
+		$options = get_option( self::$key );
 		if ( isset( $options[ $this->prefix( $id ) ] ) ) {
 			return $options[ $this->prefix( $id ) ];
 		}
@@ -323,7 +369,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	}
 
 	/**
-	 * Public getter method for retrieving protected/private variables.
+	 * Public getter method for retrieving protected/private properties.
 	 *
 	 * @throws Exception
 	 * @param  string  $field Field to retrieve
@@ -354,5 +400,22 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		}
 
 		return $option;
+	}
+
+	/**
+	 * Remove any data we may have in the DB. This is intended to only be called on plugin uninstall.
+	 */
+	public static function cleanup() {
+
+		if ( is_multisite() ) {
+			delete_network_option( false, self::$key );
+
+			$sites = get_sites( array( 'fields' => 'ids' ) );
+			foreach ( $sites as $site_id ) {
+				delete_blog_option( $site_id, self::$key );
+			}
+		} else {
+			delete_option( self::$key );
+		}
 	}
 }

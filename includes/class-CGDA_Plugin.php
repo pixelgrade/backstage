@@ -79,7 +79,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 
 	/**
 	 * Main class class object.
-	 * @var StyleManager
+	 * @var CGDA
 	 * @access  public
 	 * @since   1.0.0
 	 */
@@ -92,7 +92,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	 * @access  public
 	 * @since   1.0.0
 	 */
-	public $file;
+	protected $file;
 
 	/**
 	 * Minimal Required PHP Version.
@@ -114,7 +114,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		$this->base_url        = home_url();
 
 		// Initialize the options API.
-		require_once( $this->plugin_basepath . 'includes/lib/class-Options.php' );
+		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/lib/class-Options.php' );
 		if ( is_null( $this->options ) ) {
 			$this->options = CGDA_Options::getInstance( 'cgda' );
 		}
@@ -158,13 +158,43 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	/**
 	 * Register our actions and filters
 	 */
-	function register_hooks() {
+	public function register_hooks() {
 		/* Handle the install and uninstall logic. */
 		register_activation_hook( $this->file, array( 'CGDA_Plugin', 'install' ) );
 		register_deactivation_hook( $this->file, array( 'CGDA_Plugin', 'uninstall' ) );
+		register_uninstall_hook( $this->file, array( 'CGDA_Plugin', 'uninstall' ) );
+
+		add_action( 'admin_init', array( $this, 'check_setup' ) );
+
+		add_action( 'wpmu_new_blog', array( 'CGDA', 'multisite_maybe_add_user_to_new_blog' ), 10, 1 );
 
 		/* Handle localisation. */
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
+	}
+
+	public function check_setup() {
+		CGDA::check_setup();
+	}
+
+	public function is_plugin_network_activated() {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		if ( is_multisite() && is_plugin_active_for_network( plugin_basename( $this->get_file() ) ) ) {
+			return  true;
+		}
+
+		return false;
+	}
+
+	public static function add_admin_notice( $callable ) {
+		$hook = 'admin_notices';
+		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
+			$hook = 'network_admin_notices';
+		}
+
+		add_action( $hook, $callable );
 	}
 
 	public function get_version() {
@@ -182,52 +212,27 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	/*
 	 * Install everything needed.
 	 */
-	static public function install() {
-		if ( ! get_role( 'cgda-customizer-preview' ) ) {
+	public static function install() {
 
-			// Customizer access user capabilities
-			$user_capabilities = apply_filters( 'cgda_user_capabilities', array(
-				'read'               => true,
-				'edit_posts'         => false,
-				'delete_posts'       => false,
-				'edit_pages'         => false,
-				'edit_theme_options' => true,
-				'manage_options'     => true,
-				'customize'          => true,
-			) );
+		// Make sure the needed user role exists.
+		CGDA::maybe_create_user_role();
 
-			add_role( 'cgda-customizer-preview', esc_html__( 'Customizer Preview', 'cgda' ), $user_capabilities );
-		}
-
-		self::create_customizer_user();
-
-	}
-
-	/**
-	 * Create customizer user if user not exists
-	 */
-	static protected function create_customizer_user() {
-		if ( ! username_exists( 'cgda_customizer_user' ) ) {
-			// Generate a random password. This is not actually used anywhere, so no need to know it.
-			$password = wp_generate_password();
-
-			$new_user_data = array(
-				'user_login' => 'cgda_customizer_user',
-				'user_pass'  => $password,
-				'role'       => 'cgda-customizer-preview'
-			);
-
-			wp_insert_user( $new_user_data );
-		}
+		// Make sure that the needed user exists.
+		CGDA::maybe_create_customizer_user();
 	}
 
 	/*
 	 * Uninstall everything we added.
 	 */
-	static public function uninstall() {
-		if ( get_role( 'cgda-customizer-preview' ) ) {
-			remove_role( 'cgda-customizer-preview' );
-		}
+	public static function uninstall() {
+		// Make sure that the user is removed.
+		CGDA::maybe_remove_customizer_user();
+
+		// Make sure that the user role is removed.
+		CGDA::maybe_remove_user_role();
+
+		// Remove any data saved in the DB.
+		CGDA_Settings::cleanup();
 	}
 
 	public function get_baseuri() {

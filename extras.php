@@ -39,6 +39,15 @@ function cgda_get_customizer_link() {
 	return apply_filters( 'cgda_get_customzer_link', $link );
 }
 
+/**
+ * Check if current logged in user is the user user by the plugin.
+ *
+ * @return bool
+ */
+function cgda_is_customizer_user() {
+	return CGDA_Plugin()->cgda->is_customizer_user();
+}
+
 
 /**
  * Helper function to prefix options, metas IDs.
