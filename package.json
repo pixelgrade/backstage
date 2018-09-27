@@ -1,0 +1,17 @@
+{
+	"name": "backstage",
+	"devDependencies": {
+		"del": "*",
+		"es6-promise": "*",
+		"gulp": "*",
+		"gulp-chmod": "*",
+		"gulp-concat": "~2.1.7",
+		"gulp-exec": "~2.0.1",
+		"gulp-load-plugins": "*",
+		"gulp-ignore": "*",
+		"gulp-notify": "*",
+		"gulp-rename": "*",
+		"gulp-replace": "~0.4.0",
+		"gulp-rsync": "*"
+	}
+}
