@@ -131,8 +131,9 @@ class CGDA extends CGDA_Singleton_Registry {
 				'delete_posts'       => false,
 				'edit_pages'         => false,
 				'edit_theme_options' => true,
-				'manage_options'     => false,
+				'manage_options'     => true,
 				'customize'          => true,
+				'upload_files'       => false,
 			) );
 
 			add_role( self::$user_role, esc_html__( 'Customizer Preview', 'cgda' ), $user_capabilities );

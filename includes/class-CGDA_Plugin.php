@@ -161,6 +161,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	public function register_hooks() {
 		/* Handle the install and uninstall logic. */
 		register_activation_hook( $this->file, array( 'CGDA_Plugin', 'install' ) );
+//		register_deactivation_hook( $this->file, array( 'CGDA_Plugin', 'uninstall' ) );
 		register_uninstall_hook( $this->file, array( 'CGDA_Plugin', 'uninstall' ) );
 
 		add_action( 'admin_init', array( $this, 'check_setup' ) );
