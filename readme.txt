@@ -41,6 +41,10 @@ The plugin is compatible with any type of WordPress installation:
 * Works with **regular, single installations;**
 * Works with **Multisite setups;** you can activate the plugin **network-wide or per-blog.**
 
+The following **limitations** are inherent to the reality of having a sandboxed Customizer:
+* File uploads are not allowed; due to this, any controls that need file upload will not be allowed to be modified;
+* Any time a visitor leaves the Customizer, any customization is lost and when he or she enters again, all will start clean;
+
 = For theme authors by theme authors =
 
 The main audience of this plugin are **theme and plugin authors** that wish to showcase to potential customers the awesome customization possibilities provided by their product.
@@ -79,6 +83,10 @@ There is no point in showcasing a customization experience that is not consisten
 = When I navigate in the preview window, customizations don't get applied? =
 
 Sometimes, WordPress themes will come with custom JavaScript that will bind to *click events_ and stop their propagation. Due to this, the Customizer (not our's) logic can't catch that click and go the proper way of refreshing the preview window. We really have not way around that.
+
+= Can I choose to hide certain Customizer sections or panels? =
+
+The plugin doesn't provide this functionality as it is quite difficult to map it to a set of configuration options. But it should be quite straight forward to code a function that "removes" panels, sections or controls when the special pseudo-guest user is logged in.
 
 = I am a developer. Can I easily change how things work? =
 
