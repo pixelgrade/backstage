@@ -23,7 +23,7 @@ class CGDA extends CGDA_Singleton_Registry {
 	public static $username = 'cgda_customizer_user';
 	public static $user_role = 'cgda-customizer-demo-access';
 
-	public static $default_auto_login_key = 'cgda_auto_login';
+	public static $default_auto_login_key = 'customizer_auto_login';
 
 	/**
 	 * Constructor.
@@ -88,6 +88,7 @@ class CGDA extends CGDA_Singleton_Registry {
 		add_action( 'customize_controls_init', array( $this, 'register_admin_customizer_scripts' ), 10 );
 		add_action( 'customize_controls_enqueue_scripts', array( $this, 'enqueue_admin_customizer_scripts' ), 10 );
 		add_action( 'customize_controls_print_footer_scripts', array( $this, 'customize_controls_templates' ) );
+		add_action( 'customize_preview_init', array( $this, 'enqueue_customizer_preview_scripts' ) );
 
 		/* =================================
 		 * Markup outputted in the frontend.
@@ -116,6 +117,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		return $all_good;
 	}
 
+	/**
+	 * Handle the creation of the custom user role we are using to identify and restrict the auto logged in user.
+	 */
 	public static function maybe_create_user_role() {
 
 		if ( ! get_role( self::$user_role ) ) {
@@ -126,7 +130,7 @@ class CGDA extends CGDA_Singleton_Registry {
 				'edit_posts'         => false,
 				'delete_posts'       => false,
 				'edit_pages'         => false,
-				'edit_theme_options' => false,
+				'edit_theme_options' => true,
 				'manage_options'     => false,
 				'customize'          => true,
 			) );
@@ -135,6 +139,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		}
 	}
 
+	/**
+	 * Handle the removal of the created user role.
+	 */
 	public static function maybe_remove_user_role() {
 
 		if ( get_role( self::$user_role ) ) {
@@ -142,6 +149,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		}
 	}
 
+	/**
+	 * Display an admin error notice if the needed user role is missing.
+	 */
 	public static function user_role_missing_error_notice() {
 		?>
 		<div class="error notice">
@@ -181,6 +191,11 @@ class CGDA extends CGDA_Singleton_Registry {
 		}
 	}
 
+	/**
+	 * Add our user to a newly created blog in a multisite environment.
+	 *
+	 * @param int $site_id
+	 */
 	public static function multisite_maybe_add_user_to_new_blog( $site_id ) {
 		$user = get_user_by( 'login', self::$username );
 		if ( ! $user ) {
@@ -190,6 +205,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		add_user_to_blog( $site_id, $user->ID, self::$user_role );
 	}
 
+	/**
+	 * Display an admin error notice if we failed to create the needed user.
+	 */
 	public static function user_creation_error_notice() {
 		?>
 		<div class="error notice">
@@ -198,6 +216,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		<?php
 	}
 
+	/**
+	 * Display an admin error notice if we couldn't find the needed user.
+	 */
 	public static function user_missing_error_notice() {
 		?>
 		<div class="error notice">
@@ -206,6 +227,9 @@ class CGDA extends CGDA_Singleton_Registry {
 		<?php
 	}
 
+	/**
+	 * Handle the removal of the self created user.
+	 */
 	public static function maybe_remove_customizer_user() {
 
 		$user = get_user_by( 'login', self::$username );
@@ -227,7 +251,7 @@ class CGDA extends CGDA_Singleton_Registry {
 	}
 
 	/**
-	 * Is this user allowed to see the Customizer.
+	 * Is the current logged in user our user?
 	 *
 	 * @return bool
 	 */
@@ -321,6 +345,15 @@ class CGDA extends CGDA_Singleton_Registry {
 		}
 	}
 
+	/**
+	 * Force the _edit_lock meta to have a value of false when in the Customizer.
+	 *
+	 * @param $meta_value
+	 * @param $object_id
+	 * @param $meta_key
+	 *
+	 * @return bool
+	 */
 	public function prevent_meta_edit_lock( $meta_value, $object_id, $meta_key ) {
 		if ( '_edit_lock' === $meta_key ) {
 			return false;
@@ -329,6 +362,13 @@ class CGDA extends CGDA_Singleton_Registry {
 		return $meta_value;
 	}
 
+	/**
+	 * Increase the heartbeat interval.
+	 *
+	 * @param $settings
+	 *
+	 * @return mixed
+	 */
 	public function heartbeat_settings( $settings ) {
 		if ( empty( $settings['interval'] ) ) {
 			$settings['interval'] = 15 * MINUTE_IN_SECONDS;
@@ -385,7 +425,7 @@ class CGDA extends CGDA_Singleton_Registry {
 
 		$response = array(
 			'autosave' => false,
-			'changeset_status' => 'publish',
+			'changeset_status' => 'draft',
 			'setting_validities' => array(),
 		);
 
@@ -453,8 +493,23 @@ class CGDA extends CGDA_Singleton_Registry {
 				'button_link'    => esc_url( ! empty( $_GET['url'] ) ? $_GET['url'] : get_home_url() ),
 				'notice_type' => esc_attr( trim(  CGDA_Plugin()->settings->get_option( 'customizer_notice_type', 'info' ) ) ),
 				'notice_text' => trim( CGDA_Plugin()->settings->get_option( 'customizer_notice_text', __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'cgda' ) ) ),
+				'notice_dismissible' => CGDA_Plugin()->settings->get_option( 'customizer_notice_dismissible', false ),
+				'hide_info' => CGDA_Plugin()->settings->get_option( 'customizer_hide_info', false ),
 			) ) );
 		}
+	}
+
+	/**
+	 * Enqueue the Customizer preview file.
+	 */
+	public function enqueue_customizer_preview_scripts() {
+		wp_enqueue_script(
+			cgda_prefix( 'customizer_preview' ),
+			plugins_url( 'assets/js/customizer_preview.js', CGDA_Plugin()->get_file() ),
+			array( 'jquery', 'customize-preview' ),
+			CGDA_Plugin()->get_version(),
+			true
+		);
 	}
 
 	/**
@@ -492,8 +547,9 @@ class CGDA extends CGDA_Singleton_Registry {
 	 */
 	public function frontend_should_output() {
 
-		// We will not show for regular logged in users.
-		if ( is_user_logged_in() && ! $this->is_customizer_user() ) {
+		// We will not show for any logged in users, including our own user.
+		// Our user should be auto logged out in the frontend.
+		if ( is_user_logged_in() ) {
 			return false;
 		}
 
@@ -531,6 +587,11 @@ class CGDA extends CGDA_Singleton_Registry {
 		do_action( 'cgda_after_frontend_output' );
 	}
 
+	/**
+	 * Retrieve the HTML that should be shown on the frontend.
+	 *
+	 * @return string
+	 */
 	protected function frontend_html() {
 		$mode = CGDA_Plugin()->settings->get_option( 'frontend_button_mode', 'auto' );
 		$html = '';
@@ -581,6 +642,11 @@ class CGDA extends CGDA_Singleton_Registry {
 		return apply_filters( 'cgda_frontend_html', $html );
 	}
 
+	/**
+	 * Retrieve the custom CSS that should be included in the frontend.
+	 *
+	 * @return string
+	 */
 	protected function frontend_css() {
 
 		$css = '';
@@ -595,16 +661,17 @@ class CGDA extends CGDA_Singleton_Registry {
 		z-index: 1000;
 	}
 	.cgda-customizer-access-button {
-		padding: 10px 14px;
 		font-size: 16px;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 		float: right;
-		background-color: #0074a2;
+		background-color: #2196f3;
 	}
 	.cgda-customizer-access-button:hover {
-		background-color: #1e8cbe;
+		background-color: #1a70b5;
 	}
 	.cgda-customizer-access-button a {
+		padding: 10px 14px;
+        float: right;
 		color: #fff;
 		font-weight: normal !important;
 		-webkit-font-smoothing: subpixel-antialiased !important;
@@ -614,12 +681,12 @@ class CGDA extends CGDA_Singleton_Registry {
 	.cgda-customizer-access-button a:before {
 		content: "";
 		position: relative;
-		top: 1px;
+		top: 4px;
 		display: inline-block;
-		height: 17px;
-		width: 17px;
+		height: 18px;
+		width: 18px;
 		margin-right: 8px;
-		background-image: url(https://demo.thethemefoundry.com/wp-content/plugins/customizer-demo/images/brush.svg);
+		background-image: url("data:image/svg+xml,%3Csvg class=\'feather feather-sliders\' fill=\'%23fff\' stroke=\'%23fff\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' viewBox=\'0 0 24 24\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cline x1=\'4\' x2=\'4\' y1=\'21\' y2=\'14\'/%3E%3Cline x1=\'4\' x2=\'4\' y1=\'10\' y2=\'3\'/%3E%3Cline x1=\'12\' x2=\'12\' y1=\'21\' y2=\'12\'/%3E%3Cline x1=\'12\' x2=\'12\' y1=\'8\' y2=\'3\'/%3E%3Cline x1=\'20\' x2=\'20\' y1=\'21\' y2=\'16\'/%3E%3Cline x1=\'20\' x2=\'20\' y1=\'12\' y2=\'3\'/%3E%3Cline x1=\'1\' x2=\'7\' y1=\'14\' y2=\'14\'/%3E%3Cline x1=\'9\' x2=\'15\' y1=\'8\' y2=\'8\'/%3E%3Cline x1=\'17\' x2=\'23\' y1=\'16\' y2=\'16\'/%3E%3C/svg%3E");
 		background-position: center;
 		background-repeat: no-repeat;
 	}

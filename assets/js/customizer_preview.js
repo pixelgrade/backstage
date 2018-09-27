@@ -1,6 +1,9 @@
 ;(function ($, window, document, undefined) {
 
-	$(document).ready(function () {
-
-	});
+    // wp.customize.bind( 'preview-ready', function() {
+    // });
+    //
+	// $(document).ready(function () {
+    //
+    // });
 })(jQuery, window, document);

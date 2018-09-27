@@ -22,7 +22,7 @@ function cgda_get_customizer_link() {
 
 	$auto_login_key = cgda_get_setting( 'auto_login_key' );
 	if ( empty( $auto_login_key ) ) {
-		$auto_login_key = 'cgda_auto_login';
+		$auto_login_key = CGDA::$default_auto_login_key;
 	}
 
 	// First, get the current frontend URL.
@@ -79,23 +79,7 @@ function cgda_settings() {
  * @return mixed        Option value
  */
 function cgda_get_setting( $setting, $default = false ) {
-	$instance = cgda_settings();
-	return cmb2_get_option( $instance->key, $instance->prefix( $setting ), $default );
-}
-
-/**
- * Wrapper function around cmb2_update_option.
- *
- * @since  1.0.0
- *
- * @param  string  $setting Option key without any prefixing.
- * @param  mixed   $value      Value to update data with.
- * @param  boolean $single     Whether data should not be an array.
- * @return bool           Success/Failure
- */
-function cgda_update_setting( $setting, $value, $single = true ) {
-	$instance = cgda_settings();
-	return cmb2_update_option( $instance->key, $instance->prefix( $setting ), $value, $single );
+	return CGDA_Plugin()->settings->get_option( $setting, $default );
 }
 
 function cgda_array_sort( $array, $on, $order = SORT_ASC ) {

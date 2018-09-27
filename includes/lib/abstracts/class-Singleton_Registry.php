@@ -31,7 +31,6 @@ abstract class CGDA_Singleton_Registry {
 	 * @param string $arg
 	 *
 	 * @return mixed
-	 * @throws ReflectionException
 	 */
 	public static function getInstance( $arg = '' ) {
 
@@ -51,7 +50,11 @@ abstract class CGDA_Singleton_Registry {
 			if ( count( $args ) > 0 ) {
 
 				// Create and store a new instance... also pass the args
-				$reflect = new ReflectionClass( $class );
+				try {
+					$reflect = new ReflectionClass( $class );
+				} catch ( ReflectionException $exception ) {
+					_doing_it_wrong( __METHOD__, esc_html__( 'Trying to get instance of nonexistent class.', 'cgda' ), null );
+				}
 
 				// If the class has a constructor
 				if ( method_exists( $class, '__construct' ) ) {

@@ -41,3 +41,23 @@ fieldset.group {
 .postbox .uninstall_area {
     margin-top: 15px;
 }
+
+.cmb2-id-cgda-customizer-notice-text .CodeMirror {
+    max-height: 75px;
+}
+
+.cmb2-id-cgda-frontend-custom-html .CodeMirror {
+    max-height: 150px;
+}
+
+#cgda_setup_page .cmb2-id-cgda-frontend-custom-button-instructions {
+    margin-top: 0;
+}
+
+#cgda_setup_page .cmb2-id-cgda-frontend-custom-button-instructions .cmb2-metabox-description {
+    color: #23282d;
+}
+
+#cgda_setup_page .cmb2-metabox-description {
+    color: #959595;
+}

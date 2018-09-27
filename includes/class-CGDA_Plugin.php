@@ -161,7 +161,6 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	public function register_hooks() {
 		/* Handle the install and uninstall logic. */
 		register_activation_hook( $this->file, array( 'CGDA_Plugin', 'install' ) );
-		register_deactivation_hook( $this->file, array( 'CGDA_Plugin', 'uninstall' ) );
 		register_uninstall_hook( $this->file, array( 'CGDA_Plugin', 'uninstall' ) );
 
 		add_action( 'admin_init', array( $this, 'check_setup' ) );
@@ -172,10 +171,18 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 	}
 
+	/**
+	 * Check that everything needed for the plugin to function is alright.
+	 */
 	public function check_setup() {
 		CGDA::check_setup();
 	}
 
+	/**
+	 * Check if the plugin has been activated network-wide.
+	 *
+	 * @return bool
+	 */
 	public function is_plugin_network_activated() {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
@@ -188,6 +195,11 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		return false;
 	}
 
+	/**
+	 * Add an admin notice depending on how the plugin was activated: network-wide or per site.
+	 *
+	 * @param $callable
+	 */
 	public static function add_admin_notice( $callable ) {
 		$hook = 'admin_notices';
 		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
@@ -197,19 +209,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		add_action( $hook, $callable );
 	}
 
-	public function get_version() {
-		return $this->_version;
-	}
-
-	public function get_file() {
-		return $this->file;
-	}
-
-	public function get_slug() {
-		return $this->plugin_slug;
-	}
-
-	/*
+	/**
 	 * Install everything needed.
 	 */
 	public static function install() {
@@ -221,7 +221,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		CGDA::maybe_create_customizer_user();
 	}
 
-	/*
+	/**
 	 * Uninstall everything we added.
 	 */
 	public static function uninstall() {
@@ -235,10 +235,47 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 		CGDA_Settings::cleanup();
 	}
 
+	/**
+	 * Get the plugin version.
+	 *
+	 * @return string
+	 */
+	public function get_version() {
+		return $this->_version;
+	}
+
+	/**
+	 * Get the plugin main file.
+	 *
+	 * @return string
+	 */
+	public function get_file() {
+		return $this->file;
+	}
+
+	/**
+	 * Get the plugin slug.
+	 *
+	 * @return string
+	 */
+	public function get_slug() {
+		return $this->plugin_slug;
+	}
+
+	/**
+	 * Get the plugin base URI.
+	 *
+	 * @return null|string
+	 */
 	public function get_baseuri() {
 		return $this->plugin_baseuri;
 	}
 
+	/**
+	 * Get the plugin base path.
+	 *
+	 * @return null|string
+	 */
 	public function get_basepath() {
 		return $this->plugin_basepath;
 	}

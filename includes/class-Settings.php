@@ -22,7 +22,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
  	 * Option key, and, at the same time, option page slug
  	 * @var string
  	 */
-	protected static $key = null;
+	public static $key = null;
 
 	/**
 	 * Settings Page title
@@ -91,7 +91,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		// We will only add a network-wide settings page.
 
 		$box_args = array(
-			'id'           => $this->prefix( 'cgda_setup_page' ),
+			'id'           => $this->prefix( 'setup_page' ),
 			'title'        => $this->title,
 			'desc'         => 'description',
 			'object_types' => array( 'options-page' ),
@@ -100,10 +100,6 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			'autoload'     => true,
 			'show_in_rest' => false,
 		);
-
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		}
 
 		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
 			$box_args['admin_menu_hook'] = 'network_admin_menu'; // 'network_admin_menu' to add network-level options page.
@@ -116,27 +112,27 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 
 		$cmb = new_cmb2_box( apply_filters( 'cgda_cmb2_box_args', $box_args ) );
 
+		/* ================================
+		 * Fields for Customizer behavior.
+		 * ================================ */
+
 		$cmb->add_field( array(
-			'name' => esc_html__( 'URL Auto-login Key', 'cgda' ),
-			'desc' => esc_html__( 'Set the key (parameter name) that will be used to auto-login the visitor and gain access to the Customizer.', 'cgda' ),
-			'id'   => $this->prefix( 'auto_login_key' ),
-			'type' => 'text',
-			'default' => 'cgda_auto_login',
-			'attributes' => array(
-				'required'               => true, // Will be required only if visible.
-			),
+			'name' => esc_html__( 'Customizer Behavior', 'cgda' ),
+			'desc' => 'Setup how things will behave once the guest user is in the Customizer.',
+			'id'   => $this->prefix( 'customizer_title' ),
+			'type' => 'title',
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Customizer Button Text', 'cgda' ),
-			'desc' => esc_html__( 'Set the text of the button at the top of the Customizer sidebar. This button will bring the visitor back from where it came.', 'cgda' ),
+			'name' => esc_html__( 'Button Text', 'cgda' ),
+			'desc' => esc_html__( 'Input the text of the button at the top of the Customizer sidebar (that replaces the Publish button). This button will bring the visitor back to the URL it entered the Customizer from.', 'cgda' ),
 			'id'   => $this->prefix( 'customizer_back_button_text' ),
 			'type' => 'text',
 			'default' => esc_html__( 'Back to Demo', 'cgda' ),
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Customizer Notice Style', 'cgda' ),
+			'name' => esc_html__( 'Notice Style', 'cgda' ),
 			'desc' => esc_html__( 'Set the style/type of the Customizer notice. If "Custom", you can target the notification with the ".notice-cgda-custom" CSS selector.', 'cgda' ),
 			'id'   => $this->prefix( 'customizer_notice_type' ),
 			'type' => 'select',
@@ -151,12 +147,13 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Customizer Notice Text', 'cgda' ),
-			'desc' => esc_html__( 'Set the text of the Customizer notice. Leave empty if you don\'t want to show a notification.', 'cgda' ),
+			'name' => esc_html__( 'Notice HTML', 'cgda' ),
+			'desc' => esc_html__( 'Set the text or HTML of the Customizer notice. Leave empty if you don\'t want to show a notification.', 'cgda' ),
 			'id'   => $this->prefix( 'customizer_notice_text' ),
 			'type' => 'textarea_code',
 			'default' => wp_kses_post( __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'cgda' ) ),
 			'attributes' => array(
+				'rows' => 3,
 				'data-codeeditor' => json_encode( array(
 					'codemirror' => array(
 						'mode' => 'text/html',
@@ -166,7 +163,32 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		) );
 
 		$cmb->add_field( array(
-			'name'             => esc_html__( 'Frontend Button Output Mode', 'cgda' ),
+			'name' => esc_html__( 'Dismissible Notice', 'cgda' ),
+			'desc' => esc_html__( 'Decide if the notice should be dismissible by the user or not. It will only be dismissed for the current session.', 'cgda' ),
+			'id'   => $this->prefix( 'customizer_notice_dismissible' ),
+			'type' => 'checkbox',
+		) );
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Hide Customizing Info', 'cgda' ),
+			'desc' => esc_html__( 'Check to hide the top Customizer sidebar info that starts with "You are customizing...".', 'cgda' ),
+			'id'   => $this->prefix( 'customizer_hide_info' ),
+			'type' => 'checkbox',
+		) );
+
+		/* ================================
+		 * Fields for frontend output.
+		 * ================================ */
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Frontend Behavior', 'cgda' ),
+			'desc' => 'Setup how things will behave when the guest visits your site.',
+			'id'   => $this->prefix( 'frontend_title' ),
+			'type' => 'title',
+		) );
+
+		$cmb->add_field( array(
+			'name'             => esc_html__( 'Output Mode', 'cgda' ),
 			'desc'             => esc_html__( 'Here you can decide if you want us to output a button on the frontend with a link to the Customizer, or if you want to do that yourself.', 'cgda' ),
 			'id'               => $this->prefix( 'frontend_button_mode' ),
 			'type'             => 'select',
@@ -184,7 +206,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Frontend Button Text', 'cgda' ),
+			'name' => esc_html__( 'Button Text', 'cgda' ),
 			'desc' => esc_html__( 'Set here the text for the frontend button.', 'cgda' ),
 			'id'   => $this->prefix( 'frontend_button_text' ),
 			'type' => 'text',
@@ -196,7 +218,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			),
 		) );
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Frontend Button Classes', 'cgda' ),
+			'name' => esc_html__( 'Button Classes', 'cgda' ),
 			'desc' => esc_html__( 'Set here custom class(es) for the frontend button. If multiple, please separate them with a comma and a space.', 'cgda' ),
 			'id'   => $this->prefix( 'frontend_button_classes' ),
 			'type' => 'text',
@@ -208,7 +230,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			),
 		) );
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Frontend Button Wrapper Classes', 'cgda' ),
+			'name' => esc_html__( 'Button Wrapper Classes', 'cgda' ),
 			'desc' => esc_html__( 'Set here custom class(es) for the frontend button wrapper. If multiple, please separate them with a comma and a space.', 'cgda' ),
 			'id'   => $this->prefix( 'frontend_button_wrapper_classes' ),
 			'type' => 'text',
@@ -224,24 +246,6 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * Fields for custom frontend output.
 		 * ================================== */
 
-		$cmb->add_field( array(
-			'name' => esc_html__( 'Custom CSS', 'cgda' ),
-			'desc' => esc_html__( 'Add here the custom CSS you want to output on the frontend of your site. It\'s OK to leave it empty if you have the CSS elsewhere.', 'cgda' ),
-			'id'   => $this->prefix( 'frontend_custom_css' ),
-			'type' => 'textarea_code',
-			'default' => '',
-			'attributes' => array(
-				'required'               => false,
-				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
-				'data-conditional-value' => 'custom',
-
-				'data-codeeditor' => json_encode( array(
-					'codemirror' => array(
-						'mode' => 'text/css',
-					),
-				) ),
-			),
-		) );
 		$cmb->add_field( array(
 			'name' => esc_html__( 'Custom HTML', 'cgda' ),
 			'desc' => sprintf( esc_html__( 'Add here the custom HTML you want to output on the frontend of your site. You must include the %s content tag so it can be replaced with the URL for Customizer access.', 'cgda' ), '<code>%customizer_link%</code>'),
@@ -265,22 +269,109 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			),
 		) );
 
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Custom CSS', 'cgda' ),
+			'desc' => esc_html__( 'Add here the custom CSS you want to output on the frontend of your site. It\'s OK to leave it empty if you have the CSS elsewhere.', 'cgda' ),
+			'id'   => $this->prefix( 'frontend_custom_css' ),
+			'type' => 'textarea_code',
+			'default' => '.cgda-customizer-access-wrapper {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	z-index: 1000;
+}
+.cgda-customizer-access-button {
+	font-size: 16px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	float: right;
+	background-color: #2196f3;
+}
+.cgda-customizer-access-button:hover {
+	background-color: #1a70b5;
+}
+.cgda-customizer-access-button a {
+	padding: 10px 14px;
+    float: right;
+	color: #fff;
+	font-weight: normal !important;
+	-webkit-font-smoothing: subpixel-antialiased !important;
+	border-bottom: none; 
+	text-decoration: none;
+}
+.cgda-customizer-access-button a:before {
+	content: "";
+	position: relative;
+	top: 4px;
+	display: inline-block;
+	height: 18px;
+	width: 18px;
+	margin-right: 8px;
+	background-image: url("data:image/svg+xml,%3Csvg class=\'feather feather-sliders\' fill=\'%23fff\' stroke=\'%23fff\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' viewBox=\'0 0 24 24\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cline x1=\'4\' x2=\'4\' y1=\'21\' y2=\'14\'/%3E%3Cline x1=\'4\' x2=\'4\' y1=\'10\' y2=\'3\'/%3E%3Cline x1=\'12\' x2=\'12\' y1=\'21\' y2=\'12\'/%3E%3Cline x1=\'12\' x2=\'12\' y1=\'8\' y2=\'3\'/%3E%3Cline x1=\'20\' x2=\'20\' y1=\'21\' y2=\'16\'/%3E%3Cline x1=\'20\' x2=\'20\' y1=\'12\' y2=\'3\'/%3E%3Cline x1=\'1\' x2=\'7\' y1=\'14\' y2=\'14\'/%3E%3Cline x1=\'9\' x2=\'15\' y1=\'8\' y2=\'8\'/%3E%3Cline x1=\'17\' x2=\'23\' y1=\'16\' y2=\'16\'/%3E%3C/svg%3E");
+	background-position: center;
+	background-repeat: no-repeat;
+}',
+			'attributes' => array(
+				'required'               => false,
+				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
+				'data-conditional-value' => 'custom',
+
+				'data-codeeditor' => json_encode( array(
+					'codemirror' => array(
+						'mode' => 'text/css',
+					),
+				) ),
+			),
+		) );
+
 		/* ================================
 		 * Fields for self frontend output.
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Custom Frontend Button Instructions', 'cgda' ),
+			'name' => esc_html__( 'Custom Button Instructions', 'cgda' ),
 			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You use the "cgda_get_customizer_link()" PHP function to get the link to the Customizer. Output it directly or send it to JS via a localized variable.', 'cgda' ),
 			'id'   => $this->prefix( 'frontend_custom_button_instructions' ),
 			'type' => 'title',
 			'attributes' => array(
-				'required'               => false,
 				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'self',
 			),
 		) );
 
+		/* ================================
+		 * Fields for advanced settings.
+		 * ================================ */
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Advanced', 'cgda' ),
+			'desc' => 'Advanced options that you should take extra care when modifying them.',
+			'id'   => $this->prefix( 'advanced_title' ),
+			'type' => 'title',
+		) );
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'URL Auto-login Key', 'cgda' ),
+			'desc' => esc_html__( 'Set the key (parameter name) that will be used to auto-login the visitor and gain access to the Customizer.', 'cgda' ),
+			'id'   => $this->prefix( 'auto_login_key' ),
+			'type' => 'text',
+			'default' => CGDA::$default_auto_login_key,
+			'attributes' => array(
+				'required' => true,
+			),
+		) );
+
+	}
+
+	public function is_settings_page() {
+		$current_screen = get_current_screen();
+
+		if ( ! empty( $current_screen ) && $current_screen instanceof WP_Screen ) {
+			if ( in_array( $current_screen->id, array( 'appearance_page_cgda_options', 'settings_page_cgda_options-network' ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function register_admin_scripts() {
@@ -296,58 +387,19 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	}
 
 	public function enqueue_admin_scripts() {
+		if ( ! $this->is_settings_page() ) {
+			return;
+		}
+
 		// The styles.
 		wp_enqueue_style( $this->prefix( 'admin-style' ) );
 
+		// The scripts.
 		wp_enqueue_script( $this->prefix( 'settings-js' ) );
 	}
 
 	/**
-	 * Get a list of posts
-	 *
-	 * Generic function to return an array of posts formatted for CMB2. Simply pass
-	 * in your WP_Query arguments and get back a beautifully formatted CMB2 options
-	 * array.
-	 *
-	 * @param array $query_args WP_Query arguments
-	 * @return array CMB2 options array
-	 */
-	protected function get_cmb_options_array_posts( $query_args = array() ) {
-		$defaults = array(
-			'posts_per_page' => -1
-		);
-		$query = new WP_Query( array_replace_recursive( $defaults, $query_args ) );
-		return wp_list_pluck( $query->get_posts(), 'post_title', 'ID' );
-	}
-
-	/**
-	 * Get a list of terms.
-	 *
-	 * Generic function to return an array of taxonomy terms formatted for CMB2.
-	 * Simply pass in your get_terms arguments and get back a beautifully formatted
-	 * CMB2 options array.
-	 *
-	 * @param string|array $taxonomies Taxonomy name or list of Taxonomy names.
-	 * @param  array|string $query_args Optional. Array or string of arguments to get terms.
-	 * @return array CMB2 options array.
-	 */
-	protected function get_cmb_options_array_tax( $taxonomies, $query_args = '' ) {
-		$defaults = array(
-			'hide_empty' => false
-		);
-		$args = wp_parse_args( $query_args, $defaults );
-		$terms = get_terms( $taxonomies, $args );
-		$terms_array = array();
-		if ( ! empty( $terms ) ) {
-			foreach ( $terms as $term ) {
-				$terms_array[$term->term_id] = $term->name;
-			}
-		}
-		return $terms_array;
-	}
-
-	/**
-	 * Retrieves an option before the CMB2 has loaded.
+	 * Retrieves an option, even before the CMB2 has loaded.
 	 *
 	 * @since 1.0.0
 	 *
@@ -356,12 +408,11 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 * @return mixed
 	 */
 	public function get_option( $id, $default = false ) {
-		if ( function_exists( 'cmb2_get_option' ) ) {
-			// Use cmb2_get_option as it passes through some key filters.
-			return cmb2_get_option( self::$key, $id, $default );
+		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
+			$options = get_site_option( self::$key );
+		} else {
+			$options = get_option( self::$key );
 		}
-
-		$options = get_option( self::$key );
 		if ( isset( $options[ $this->prefix( $id ) ] ) ) {
 			return $options[ $this->prefix( $id ) ];
 		}
@@ -377,7 +428,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 */
 	public function __get( $field ) {
 		// Allowed fields to retrieve
-		if ( in_array( $field, array( 'key', 'title', 'options_page' ), true ) ) {
+		if ( in_array( $field, array( 'title', 'options_page' ), true ) ) {
 			return $this->{$field};
 		}
 
@@ -408,7 +459,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	public static function cleanup() {
 
 		if ( is_multisite() ) {
-			delete_network_option( false, self::$key );
+			delete_site_option( self::$key );
 
 			$sites = get_sites( array( 'fields' => 'ids' ) );
 			foreach ( $sites as $site_id ) {
