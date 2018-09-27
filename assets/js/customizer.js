@@ -8,7 +8,6 @@
 
             // Remove everything it is not needed
             $('#save').remove();
-            $('#customize-outer-theme-controls').remove();
             $('#customize-header-actions .customize-controls-close').remove();
             $('#customize-header-actions .customize-controls-preview-toggle').remove();
 
