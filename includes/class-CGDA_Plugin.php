@@ -287,14 +287,14 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 	 * @return  void
 	 */
 	public function load_localisation() {
-		$this->l10ni18n();
+		$this->load_textdomain();
 	}
 
 	/**
-	 * Registers Style Manager text domain path
+	 * Registers the plugin's text domain path
 	 * @since  1.0.0
 	 */
-	public function l10ni18n() {
+	public function load_textdomain() {
 		$loaded = load_plugin_textdomain( 'cgda', false, dirname( $this->get_basepath() ) . '/languages/' );
 
 		if ( ! $loaded ) {
@@ -303,7 +303,7 @@ final class CGDA_Plugin extends CGDA_Plugin_Init {
 
 		if ( ! $loaded ) {
 			$locale = apply_filters( 'plugin_locale', get_locale(), 'cgda' );
-			$mofile = dirname( $this->get_basepath() ) . '/languages/sm-' . $locale . '.mo';
+			$mofile = dirname( $this->get_basepath() ) . '/languages/cgda-' . $locale . '.mo';
 			load_textdomain( 'cgda', $mofile );
 		}
 	}

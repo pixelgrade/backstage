@@ -224,7 +224,7 @@ function cgda_doing_it_wrong( $function, $message, $version ) {
 function cgda_autoload_dir( $path, $depth = 0, $method = 'require_once' ) {
 	// If the $path starts with the absolute path to the WP install or the plugin directory, not good
 	if ( strpos( $path, ABSPATH ) === 0 && strpos( $path, plugin_dir_path( __FILE__ ) ) !== 0 ) {
-		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Please provide only paths in the Style Manager for autoloading.', 'cgda' ), null );
+		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Please provide only paths in the plugin for autoloading.', 'cgda' ), null );
 		return false;
 	}
 
