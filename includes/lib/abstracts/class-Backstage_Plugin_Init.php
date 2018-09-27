@@ -24,7 +24,7 @@ abstract class Backstage_Plugin_Init extends Backstage_Singleton_Registry {
 	 * @access  private
 	 * @since   1.0.0
 	 */
-	private $minimalRequiredPhpVersion = 5.6;
+	protected $minimalRequiredPhpVersion = '5.6.0';
 
 	/**
 	 * Plugin Name.
@@ -80,7 +80,7 @@ abstract class Backstage_Plugin_Init extends Backstage_Singleton_Registry {
 		$html = '<div class="updated fade">' .
 		        sprintf( esc_html__( 'Error: plugin "%s" requires a newer version of PHP to be running.', 'backstage' ), $this->plugin_name ) .
 		        '<br/>' . sprintf( esc_html__( 'Minimal version of PHP required: %s', 'backstage' ), '<strong>' . $this->minimalRequiredPhpVersion . '</strong>' ) .
-				'<br/>' . sprintf( __( 'Your server\'s PHP version: %s', 'backstage' ) . '<strong>' . phpversion() . '</strong>' ) .
+				'<br/>' . sprintf( esc_html__( 'Your server\'s PHP version: %s', 'backstage' ), '<strong>' . phpversion() . '</strong>' ) .
 				'</div>';
 		echo wp_kses( $html, $allowed );
 	}

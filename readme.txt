@@ -3,7 +3,7 @@ Contributors: pixelgrade, vlad.olaru
 Tags: customizer, demo, guest access, theme preview, site customization, sandbox, preview options
 Requires at least: 4.9.0
 Tested up to: 4.9.8
-Requires PHP: 5.2.4
+Requires PHP: 5.4.0
 Stable tag: 1.0.0
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html 
