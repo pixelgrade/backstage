@@ -11,14 +11,13 @@
             $('#customize-header-actions .customize-controls-close').remove();
             $('#customize-header-actions .customize-controls-preview-toggle').remove();
 
+            // Remove the Customizer info section, if we have been instructed to do so.
             if ( ( typeof backstage.hide_info !== "undefined" && backstage.hide_info != "" ) ) {
                 $('#customize-info').remove();
             }
 
-            // Make sure that there are no loose ends.
-            // api.notifications.remove( 'autosave_available' );
-
             let button_template = wp.template('backstage-customizer-button');
+            
             $('#customize-save-button-wrapper').html(button_template(backstage));
 
             if ( typeof backstage.notice_text !== "undefined" && backstage.notice_text != "" ) {
