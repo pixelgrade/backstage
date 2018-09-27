@@ -1,8 +1,8 @@
 <?php
 /**
- * Document for class CGDA_Options.
+ * Document for class Backstage_Options.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author      Pixelgrade
  * @since       1.0.0
  */
-class CGDA_Options extends CGDA_Singleton_Registry {
+class Backstage_Options extends Backstage_Singleton_Registry {
 
 	/**
 	 * The token used for prefixing.

@@ -1,8 +1,8 @@
 <?php
 /**
- * Document for abstract class CGDA_Singleton_Registry.
+ * Document for abstract class Backstage_Singleton_Registry.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author      Pixelgrade
  * @since       1.0.0
  */
-abstract class CGDA_Singleton_Registry {
+abstract class Backstage_Singleton_Registry {
 
 	/**
 	 * The instances list.
@@ -53,7 +53,7 @@ abstract class CGDA_Singleton_Registry {
 				try {
 					$reflect = new ReflectionClass( $class );
 				} catch ( ReflectionException $exception ) {
-					_doing_it_wrong( __METHOD__, esc_html__( 'Trying to get instance of nonexistent class.', 'cgda' ), null );
+					_doing_it_wrong( __METHOD__, esc_html__( 'Trying to get instance of nonexistent class.', 'backstage' ), null );
 				}
 
 				// If the class has a constructor
@@ -118,7 +118,7 @@ abstract class CGDA_Singleton_Registry {
 	 * @since 1.0.0
 	 */
 	public function __clone() {
-		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Cloning is forbidden.', 'cgda' ), '1.0.0' );
+		backstage_doing_it_wrong( __FUNCTION__, esc_html__( 'Cloning is forbidden.', 'backstage' ), '1.0.0' );
 	} // End __clone ()
 
 	/**
@@ -127,7 +127,7 @@ abstract class CGDA_Singleton_Registry {
 	 * @since 1.0.0
 	 */
 	public function __wakeup() {
-		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Unserializing instances of this class is forbidden.', 'cgda' ), '1.0.0' );
+		backstage_doing_it_wrong( __FUNCTION__, esc_html__( 'Unserializing instances of this class is forbidden.', 'backstage' ), '1.0.0' );
 	} // End __wakeup ()
 }
 

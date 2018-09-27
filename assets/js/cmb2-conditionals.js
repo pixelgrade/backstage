@@ -110,5 +110,5 @@ jQuery(document).ready(function($) {
         });
     }
 
-	CMB2ConditionalsInit('.option-cgda_options');
+	CMB2ConditionalsInit('.option-backstage_options');
 });

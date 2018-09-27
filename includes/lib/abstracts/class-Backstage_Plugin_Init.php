@@ -1,8 +1,8 @@
 <?php
 /**
- * Document for abstract class CGDA_Plugin_Init.
+ * Document for abstract class Backstage_Plugin_Init.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author      Pixelgrade
  * @since       1.0.0
  */
-abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
+abstract class Backstage_Plugin_Init extends Backstage_Singleton_Registry {
 
 	/**
 	 * Minimal Required PHP Version
@@ -78,9 +78,9 @@ abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
 		);
 
 		$html = '<div class="updated fade">' .
-		        sprintf( esc_html__( 'Error: plugin "%s" requires a newer version of PHP to be running.', 'cgda' ), $this->plugin_name ) .
-		        '<br/>' . sprintf( esc_html__( 'Minimal version of PHP required: %s', 'cgda' ), '<strong>' . $this->minimalRequiredPhpVersion . '</strong>' ) .
-				'<br/>' . sprintf( __( 'Your server\'s PHP version: %s', 'cgda' ) . '<strong>' . phpversion() . '</strong>' ) .
+		        sprintf( esc_html__( 'Error: plugin "%s" requires a newer version of PHP to be running.', 'backstage' ), $this->plugin_name ) .
+		        '<br/>' . sprintf( esc_html__( 'Minimal version of PHP required: %s', 'backstage' ), '<strong>' . $this->minimalRequiredPhpVersion . '</strong>' ) .
+				'<br/>' . sprintf( __( 'Your server\'s PHP version: %s', 'backstage' ) . '<strong>' . phpversion() . '</strong>' ) .
 				'</div>';
 		echo wp_kses( $html, $allowed );
 	}
@@ -141,7 +141,7 @@ abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
 
 		foreach ( $this->new_versions as $new_version ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' .
-			     sprintf( __( 'The <strong>%s</strong> plugin has been updated to version %s. Enjoy!', 'cgda' ), $this->plugin_name, $new_version ) .
+			     sprintf( __( 'The <strong>%s</strong> plugin has been updated to version %s. Enjoy!', 'backstage' ), $this->plugin_name, $new_version ) .
 			     '</p></div>';
 		}
 	}
@@ -158,7 +158,7 @@ abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
 	 */
 	public function get_version_saved() {
 
-		return CGDA_Options::getInstance()->get_option( 'version' );
+		return Backstage_Options::getInstance()->get_option( 'version' );
 	}
 
 	/**
@@ -168,7 +168,7 @@ abstract class CGDA_Plugin_Init extends CGDA_Singleton_Registry {
 	 * @return  void
 	 */
 	public function save_version_number() {
-		CGDA_Options::getInstance()->update_option( 'version', $this->_version );
+		Backstage_Options::getInstance()->update_option( 'version', $this->_version );
 	} // End save_version_number ()
 
 	public function debug( $what ) {

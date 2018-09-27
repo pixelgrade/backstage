@@ -4,7 +4,7 @@
  *
  * Contains extra (helper) functions.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 /**
@@ -12,7 +12,7 @@
  *
  * @return string
  */
-function cgda_get_customizer_link() {
+function backstage_get_customizer_link() {
 	global $wp;
 
 	// This should not be used in the admin.
@@ -20,9 +20,9 @@ function cgda_get_customizer_link() {
 		return '';
 	}
 
-	$auto_login_key = cgda_get_setting( 'auto_login_key' );
+	$auto_login_key = backstage_get_setting( 'auto_login_key' );
 	if ( empty( $auto_login_key ) ) {
-		$auto_login_key = CGDA::$default_auto_login_key;
+		$auto_login_key = Backstage::$default_auto_login_key;
 	}
 
 	// First, get the current frontend URL.
@@ -36,7 +36,7 @@ function cgda_get_customizer_link() {
 	$link = add_query_arg( $auto_login_key, urlencode( $auto_login_hash ), $link );
 	$link = add_query_arg( 'return_url', urlencode( $current_url ), $link );
 
-	return apply_filters( 'cgda_get_customzer_link', $link );
+	return apply_filters( 'backstage_get_customizer_link', $link );
 }
 
 /**
@@ -44,8 +44,8 @@ function cgda_get_customizer_link() {
  *
  * @return bool
  */
-function cgda_is_customizer_user() {
-	return CGDA_Plugin()->cgda->is_customizer_user();
+function backstage_is_customizer_user() {
+	return Backstage_Plugin()->backstage->is_customizer_user();
 }
 
 
@@ -56,17 +56,17 @@ function cgda_is_customizer_user() {
  * @param string $separator Optional. The separator to use between prefix and the rest.
  * @return string
  */
-function cgda_prefix( $option, $separator = '_' ) {
-	return CGDA_Metaboxes::getInstance()->prefix( $option, $separator );
+function backstage_prefix( $option, $separator = '_' ) {
+	return Backstage_Metaboxes::getInstance()->prefix( $option, $separator );
 }
 
 /**
- * Helper function to get/return the CGDA_Settings object
+ * Helper function to get/return the Backstage_Settings object
  *
- * @return CGDA_Settings
+ * @return Backstage_Settings
  */
-function cgda_settings() {
-	return CGDA_Settings::getInstance();
+function backstage_settings() {
+	return Backstage_Settings::getInstance();
 }
 
 /**
@@ -78,11 +78,11 @@ function cgda_settings() {
  * @param mixed $default Optional. The default value to retrieve in case the option was not found.
  * @return mixed        Option value
  */
-function cgda_get_setting( $setting, $default = false ) {
-	return CGDA_Plugin()->settings->get_option( $setting, $default );
+function backstage_get_setting( $setting, $default = false ) {
+	return Backstage_Plugin()->settings->get_option( $setting, $default );
 }
 
-function cgda_array_sort( $array, $on, $order = SORT_ASC ) {
+function backstage_array_sort( $array, $on, $order = SORT_ASC ) {
 	$new_array = array();
     $sortable_array = array();
 
@@ -116,7 +116,7 @@ function cgda_array_sort( $array, $on, $order = SORT_ASC ) {
     return $new_array;
 }
 
-function cgda_get_string_between( $string, $start, $end = null ){
+function backstage_get_string_between( $string, $start, $end = null ){
 	$string = ' ' . $string;
     $ini = strpos($string, $start);
     if ($ini == 0) return '';
@@ -136,14 +136,14 @@ function cgda_get_string_between( $string, $start, $end = null ){
  * Get the complete current URL including query args
  * @return string
  */
-function cgda_get_current_url() {
+function backstage_get_current_url() {
 	//@todo we should do this is more standard WordPress way
 	$url  = @( $_SERVER["HTTPS"] != 'on' ) ? 'http://'.$_SERVER["SERVER_NAME"] :  'https://'.$_SERVER["SERVER_NAME"];
 	$url .= $_SERVER["REQUEST_URI"];
 	return $url;
 }
 
-function cgda_to_bool( $value ) {
+function backstage_to_bool( $value ) {
 	if ( empty( $value ) ) {
 		return false;
 	}
@@ -160,11 +160,11 @@ function cgda_to_bool( $value ) {
  *
  * @return boolean
  */
-function cgda_meta_to_bool( $post_id, $meta_key ) {
+function backstage_meta_to_bool( $post_id, $meta_key ) {
 
 	$result = get_post_meta( $post_id, $meta_key, true );
 
-	return cgda_to_bool( $result );
+	return backstage_to_bool( $result );
 }
 
 /**
@@ -175,7 +175,7 @@ function cgda_meta_to_bool( $post_id, $meta_key ) {
  *
  * @return bool
  */
-function cgda_string_contains_any( $haystack, $needles ) {
+function backstage_string_contains_any( $haystack, $needles ) {
 	foreach ( $needles as $needle ) {
 		if ( false !== strpos( $haystack, $needle ) ) {
 			return true;
@@ -195,7 +195,7 @@ function cgda_string_contains_any( $haystack, $needles ) {
  * @param string $message Message to log.
  * @param string $version Version the message was added in.
  */
-function cgda_doing_it_wrong( $function, $message, $version ) {
+function backstage_doing_it_wrong( $function, $message, $version ) {
 	// @codingStandardsIgnoreStart
 	$message .= ' Backtrace: ' . wp_debug_backtrace_summary();
 
@@ -221,15 +221,15 @@ function cgda_doing_it_wrong( $function, $message, $version ) {
  *
  * @return false|int False on failure, otherwise the number of files loaded.
  */
-function cgda_autoload_dir( $path, $depth = 0, $method = 'require_once' ) {
+function backstage_autoload_dir( $path, $depth = 0, $method = 'require_once' ) {
 	// If the $path starts with the absolute path to the WP install or the plugin directory, not good
 	if ( strpos( $path, ABSPATH ) === 0 && strpos( $path, plugin_dir_path( __FILE__ ) ) !== 0 ) {
-		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'Please provide only paths in the plugin for autoloading.', 'cgda' ), null );
+		backstage_doing_it_wrong( __FUNCTION__, esc_html__( 'Please provide only paths in the plugin for autoloading.', 'backstage' ), null );
 		return false;
 	}
 
 	if ( ! in_array( $method, array( 'require', 'require_once', 'include', 'include_once' ) ) ) {
-		cgda_doing_it_wrong( __FUNCTION__, esc_html__( 'We support only require, require_once, include, and include_once.', 'cgda' ), null );
+		backstage_doing_it_wrong( __FUNCTION__, esc_html__( 'We support only require, require_once, include, and include_once.', 'backstage' ), null );
 		return false;
 	}
 
@@ -278,7 +278,7 @@ function cgda_autoload_dir( $path, $depth = 0, $method = 'require_once' ) {
 		$iterator->rewind();
 		foreach ( $iterator as $file_info ) {
 			if ( $file_info->isDir() && ! $file_info->isDot() ) {
-				$counter += cgda_autoload_dir( $file_info->getPathname(), $depth, $method );
+				$counter += backstage_autoload_dir( $file_info->getPathname(), $depth, $method );
 			}
 		}
 	}
@@ -293,7 +293,7 @@ function cgda_autoload_dir( $path, $depth = 0, $method = 'require_once' ) {
  *
  * @return string
  */
-function cgda_encodeURIComponent( $str ) {
+function backstage_encodeURIComponent( $str ) {
 	//if we get an array we just let it be
 	if ( is_string( $str ) ) {
 		$revert = array( '%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')' );
@@ -314,7 +314,7 @@ function cgda_encodeURIComponent( $str ) {
  *
  * @return string
  */
-function cgda_decodeURIComponent( $str ) {
+function backstage_decodeURIComponent( $str ) {
 	// If we get an array we just let it be
 	if ( is_string( $str ) ) {
 		$revert = array( '!' => '%21', '*' => '%2A', "'" => '%27', '(' => '%28', ')' => '%29' );
@@ -331,7 +331,7 @@ function cgda_decodeURIComponent( $str ) {
  *
  * @return bool
  */
-function cgda_is_assoc( $array ) {
+function backstage_is_assoc( $array ) {
 
 	if ( ! is_array( $array ) ) {
 		return false;
@@ -353,7 +353,7 @@ function cgda_is_assoc( $array ) {
  *
  * @return array|false|string[]
  */
-function cgda_maybe_split_by_whitespace( $value ) {
+function backstage_maybe_split_by_whitespace( $value ) {
 	if ( ! is_string( $value ) ) {
 		return $value;
 	}
@@ -369,7 +369,7 @@ function cgda_maybe_split_by_whitespace( $value ) {
  *
  * @return array
  */
-function cgda_maybe_explode_list( $str, $delimiter = ',' ) {
+function backstage_maybe_explode_list( $str, $delimiter = ',' ) {
 	// If by any chance we are given an array, just return it
 	if ( is_array( $str ) ) {
 		return $str;
@@ -406,9 +406,9 @@ function cgda_maybe_explode_list( $str, $delimiter = ',' ) {
  * @param string       $suffix Optional. Suffix to append to all of the provided classes
  * @return string
  */
-function cgda_css_class( $class = '', $location = '', $prefix = '', $suffix = '' ) {
+function backstage_css_class( $class = '', $location = '', $prefix = '', $suffix = '' ) {
 	// Separates classes with a single space, collates classes for element
-	return 'class="' . esc_attr( join( ' ', cgda_get_css_class( $class, $location ) ) ) . '"';
+	return 'class="' . esc_attr( join( ' ', backstage_get_css_class( $class, $location ) ) ) . '"';
 }
 
 /**
@@ -421,11 +421,11 @@ function cgda_css_class( $class = '', $location = '', $prefix = '', $suffix = ''
  *
  * @return array Array of classes.
  */
-function cgda_get_css_class( $class = '', $location = '', $prefix = '', $suffix = '' ) {
+function backstage_get_css_class( $class = '', $location = '', $prefix = '', $suffix = '' ) {
 	$classes = array();
 
 	if ( ! empty( $class ) ) {
-		$class = cgda_maybe_split_by_whitespace( $class );
+		$class = backstage_maybe_split_by_whitespace( $class );
 
 		// If we have a prefix then we need to add it to every class
 		if ( ! empty( $prefix ) && is_string( $prefix ) ) {

@@ -1,7 +1,7 @@
 ;(function ($, window, document, undefined) {
 
     // wp.customize.bind( 'preview-ready', function() {
-    //     wp.customize.preview.body.on( 'click.cgda', 'a', function( event ) {
+    //     wp.customize.preview.body.on( 'click.backstage', 'a', function( event ) {
     //         let test = 'test';
     //     } );
     // });

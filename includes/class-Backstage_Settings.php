@@ -1,8 +1,8 @@
 <?php
 /**
- * Document for class CGDA_Settings.
+ * Document for class Backstage_Settings.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author      Pixelgrade
  * @since       1.0.0
  */
-class CGDA_Settings extends CGDA_Singleton_Registry {
+class Backstage_Settings extends Backstage_Singleton_Registry {
 
 	/**
  	 * Option key, and, at the same time, option page slug
@@ -50,7 +50,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		self::$key = $this->prefix('options' );
 
 		// Set our settings page title.
-		$this->title = esc_html__( 'Customizer Guest Demo Access Setup', 'cgda' );
+		$this->title = esc_html__( 'Backstage Setup', 'backstage' );
 
 		$this->add_hooks();
 	}
@@ -96,12 +96,12 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			'desc'         => 'description',
 			'object_types' => array( 'options-page' ),
 			'option_key'   => self::$key, // The option key and admin menu page slug.
-			'menu_title'   => esc_html__( 'Customizer Guest Access', 'cgda' ),
+			'menu_title'   => esc_html__( 'Backstage', 'backstage' ),
 			'autoload'     => true,
 			'show_in_rest' => false,
 		);
 
-		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
+		if ( Backstage_Plugin()->is_plugin_network_activated() ) {
 			$box_args['admin_menu_hook'] = 'network_admin_menu'; // 'network_admin_menu' to add network-level options page.
 			$box_args['parent_slug'] = 'settings.php'; // Make options page a submenu item of the settings menu.
 		} else {
@@ -110,48 +110,48 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		}
 
 
-		$cmb = new_cmb2_box( apply_filters( 'cgda_cmb2_box_args', $box_args ) );
+		$cmb = new_cmb2_box( apply_filters( 'backstage_cmb2_box_args', $box_args ) );
 
 		/* ================================
 		 * Fields for Customizer behavior.
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Customizer Behavior', 'cgda' ),
+			'name' => esc_html__( 'Customizer Behavior', 'backstage' ),
 			'desc' => 'Setup how things will behave once the guest user is in the Customizer.',
 			'id'   => $this->prefix( 'customizer_title' ),
 			'type' => 'title',
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Button Text', 'cgda' ),
-			'desc' => esc_html__( 'Input the text of the button at the top of the Customizer sidebar (that replaces the Publish button). This button will bring the visitor back to the URL it entered the Customizer from.', 'cgda' ),
+			'name' => esc_html__( 'Button Text', 'backstage' ),
+			'desc' => esc_html__( 'Input the text of the button at the top of the Customizer sidebar (that replaces the Publish button). This button will bring the visitor back to the URL it entered the Customizer from.', 'backstage' ),
 			'id'   => $this->prefix( 'customizer_back_button_text' ),
 			'type' => 'text',
-			'default' => esc_html__( 'Back to Demo', 'cgda' ),
+			'default' => esc_html__( 'Back to Demo', 'backstage' ),
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Notice Style', 'cgda' ),
-			'desc' => esc_html__( 'Set the style/type of the Customizer notice. If "Custom", you can target the notification with the ".notice-cgda-custom" CSS selector.', 'cgda' ),
+			'name' => esc_html__( 'Notice Style', 'backstage' ),
+			'desc' => esc_html__( 'Set the style/type of the Customizer notice. If "Custom", you can target the notification with the ".notice-backstage-custom" CSS selector.', 'backstage' ),
 			'id'   => $this->prefix( 'customizer_notice_type' ),
 			'type' => 'select',
 			'default' => 'info',
 			'options' => array(
-				'info'        => esc_html__( 'Info', 'cgda' ),
-				'warning'     => esc_html__( 'Warning', 'cgda' ),
-				'success'     => esc_html__( 'Success', 'cgda' ),
-				'error'       => esc_html__( 'Error', 'cgda' ),
-				'cgda-custom' => esc_html__( 'Custom', 'cgda' ),
+				'info'        => esc_html__( 'Info', 'backstage' ),
+				'warning'     => esc_html__( 'Warning', 'backstage' ),
+				'success'     => esc_html__( 'Success', 'backstage' ),
+				'error'       => esc_html__( 'Error', 'backstage' ),
+				'backstage-custom' => esc_html__( 'Custom', 'backstage' ),
 			),
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Notice HTML', 'cgda' ),
-			'desc' => esc_html__( 'Set the text or HTML of the Customizer notice. Leave empty if you don\'t want to show a notification.', 'cgda' ),
+			'name' => esc_html__( 'Notice HTML', 'backstage' ),
+			'desc' => esc_html__( 'Set the text or HTML of the Customizer notice. Leave empty if you don\'t want to show a notification.', 'backstage' ),
 			'id'   => $this->prefix( 'customizer_notice_text' ),
 			'type' => 'textarea_code',
-			'default' => wp_kses_post( __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'cgda' ) ),
+			'default' => wp_kses_post( __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'backstage' ) ),
 			'attributes' => array(
 				'rows' => 3,
 				'data-codeeditor' => json_encode( array(
@@ -163,15 +163,15 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Dismissible Notice', 'cgda' ),
-			'desc' => esc_html__( 'Decide if the notice should be dismissible by the user or not. It will only be dismissed for the current session.', 'cgda' ),
+			'name' => esc_html__( 'Dismissible Notice', 'backstage' ),
+			'desc' => esc_html__( 'Decide if the notice should be dismissible by the user or not. It will only be dismissed for the current session.', 'backstage' ),
 			'id'   => $this->prefix( 'customizer_notice_dismissible' ),
 			'type' => 'checkbox',
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Hide Customizing Info', 'cgda' ),
-			'desc' => esc_html__( 'Check to hide the top Customizer sidebar info that starts with "You are customizing...".', 'cgda' ),
+			'name' => esc_html__( 'Hide Customizing Info', 'backstage' ),
+			'desc' => esc_html__( 'Check to hide the top Customizer sidebar info that starts with "You are customizing...".', 'backstage' ),
 			'id'   => $this->prefix( 'customizer_hide_info' ),
 			'type' => 'checkbox',
 		) );
@@ -181,23 +181,23 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Frontend Behavior', 'cgda' ),
+			'name' => esc_html__( 'Frontend Behavior', 'backstage' ),
 			'desc' => 'Setup how things will behave when the guest visits your site.',
 			'id'   => $this->prefix( 'frontend_title' ),
 			'type' => 'title',
 		) );
 
 		$cmb->add_field( array(
-			'name'             => esc_html__( 'Output Mode', 'cgda' ),
-			'desc'             => esc_html__( 'Here you can decide if you want us to output a button on the frontend with a link to the Customizer, or if you want to do that yourself.', 'cgda' ),
+			'name'             => esc_html__( 'Output Mode', 'backstage' ),
+			'desc'             => esc_html__( 'Here you can decide if you want us to output a button on the frontend with a link to the Customizer, or if you want to do that yourself.', 'backstage' ),
 			'id'               => $this->prefix( 'frontend_button_mode' ),
 			'type'             => 'select',
 			'show_option_none' => false,
 			'default'          => 'auto',
 			'options'          => array(
-				'auto'   => esc_html__( 'Output a button for me', 'cgda' ),
-				'custom' => esc_html__( 'Let me specify the button markup and CSS', 'cgda' ),
-				'self'   => esc_html__( 'I will handle the button myself', 'cgda' ),
+				'auto'   => esc_html__( 'Output a button for me', 'backstage' ),
+				'custom' => esc_html__( 'Let me specify the button markup and CSS', 'backstage' ),
+				'self'   => esc_html__( 'I will handle the button myself', 'backstage' ),
 			),
 		) );
 
@@ -206,11 +206,11 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Button Text', 'cgda' ),
-			'desc' => esc_html__( 'Set here the text for the frontend button.', 'cgda' ),
+			'name' => esc_html__( 'Button Text', 'backstage' ),
+			'desc' => esc_html__( 'Set here the text for the frontend button.', 'backstage' ),
 			'id'   => $this->prefix( 'frontend_button_text' ),
 			'type' => 'text',
-			'default' => esc_html__( 'Customize Styles', 'cgda' ),
+			'default' => esc_html__( 'Customize Styles', 'backstage' ),
 			'attributes' => array(
 				'required'               => true, // Will be required only if visible.
 				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
@@ -218,8 +218,8 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			),
 		) );
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Button Classes', 'cgda' ),
-			'desc' => esc_html__( 'Set here custom class(es) for the frontend button. If multiple, please separate them with a comma and a space.', 'cgda' ),
+			'name' => esc_html__( 'Button Classes', 'backstage' ),
+			'desc' => esc_html__( 'Set here custom class(es) for the frontend button. If multiple, please separate them with a comma and a space.', 'backstage' ),
 			'id'   => $this->prefix( 'frontend_button_classes' ),
 			'type' => 'text',
 			'default' => '',
@@ -230,8 +230,8 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 			),
 		) );
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Button Wrapper Classes', 'cgda' ),
-			'desc' => esc_html__( 'Set here custom class(es) for the frontend button wrapper. If multiple, please separate them with a comma and a space.', 'cgda' ),
+			'name' => esc_html__( 'Button Wrapper Classes', 'backstage' ),
+			'desc' => esc_html__( 'Set here custom class(es) for the frontend button wrapper. If multiple, please separate them with a comma and a space.', 'backstage' ),
 			'id'   => $this->prefix( 'frontend_button_wrapper_classes' ),
 			'type' => 'text',
 			'default' => '',
@@ -247,13 +247,13 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * ================================== */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Custom HTML', 'cgda' ),
-			'desc' => sprintf( esc_html__( 'Add here the custom HTML you want to output on the frontend of your site. You must include the %s content tag so it can be replaced with the URL for Customizer access.', 'cgda' ), '<code>%customizer_link%</code>'),
+			'name' => esc_html__( 'Custom HTML', 'backstage' ),
+			'desc' => sprintf( esc_html__( 'Add here the custom HTML you want to output on the frontend of your site. You must include the %s content tag so it can be replaced with the URL for Customizer access.', 'backstage' ), '<code>%customizer_link%</code>'),
 			'id'   => $this->prefix( 'frontend_custom_html' ),
 			'type' => 'textarea_code',
-			'default' => '<div class="cgda-customizer-access-wrapper">
-	<div class="cgda-customizer-access-button">
-		<a class="cgda-customizer-access-link" href="%customizer_link%">Customize Styles</a>
+			'default' => '<div class="backstage-customizer-access-wrapper">
+	<div class="backstage-customizer-access-button">
+		<a class="backstage-customizer-access-link" href="%customizer_link%">Customize Styles</a>
 	</div>
 </div>',
 			'attributes' => array(
@@ -270,26 +270,26 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Custom CSS', 'cgda' ),
-			'desc' => esc_html__( 'Add here the custom CSS you want to output on the frontend of your site. It\'s OK to leave it empty if you have the CSS elsewhere.', 'cgda' ),
+			'name' => esc_html__( 'Custom CSS', 'backstage' ),
+			'desc' => esc_html__( 'Add here the custom CSS you want to output on the frontend of your site. It\'s OK to leave it empty if you have the CSS elsewhere.', 'backstage' ),
 			'id'   => $this->prefix( 'frontend_custom_css' ),
 			'type' => 'textarea_code',
-			'default' => '.cgda-customizer-access-wrapper {
+			'default' => '.backstage-customizer-access-wrapper {
 	position: fixed;
 	bottom: 0;
 	right: 0;
 	z-index: 1000;
 }
-.cgda-customizer-access-button {
+.backstage-customizer-access-button {
 	font-size: 16px;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	float: right;
 	background-color: #2196f3;
 }
-.cgda-customizer-access-button:hover {
+.backstage-customizer-access-button:hover {
 	background-color: #1a70b5;
 }
-.cgda-customizer-access-button a {
+.backstage-customizer-access-button a {
 	padding: 10px 14px;
     float: right;
 	color: #fff;
@@ -298,7 +298,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	border-bottom: none; 
 	text-decoration: none;
 }
-.cgda-customizer-access-button a:before {
+.backstage-customizer-access-button a:before {
 	content: "";
 	position: relative;
 	top: 4px;
@@ -328,8 +328,8 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Custom Button Instructions', 'cgda' ),
-			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You use the "cgda_get_customizer_link()" PHP function to get the link to the Customizer. Output it directly or send it to JS via a localized variable.', 'cgda' ),
+			'name' => esc_html__( 'Custom Button Instructions', 'backstage' ),
+			'desc' => esc_html__( 'Since you wish to have control and handle your own button, we will make it easy for you. You use the "backstage_get_customizer_link()" PHP function to get the link to the Customizer. Output it directly or send it to JS via a localized variable.', 'backstage' ),
 			'id'   => $this->prefix( 'frontend_custom_button_instructions' ),
 			'type' => 'title',
 			'attributes' => array(
@@ -343,18 +343,18 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		 * ================================ */
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'Advanced', 'cgda' ),
+			'name' => esc_html__( 'Advanced', 'backstage' ),
 			'desc' => 'Advanced options that you should take extra care when modifying them.',
 			'id'   => $this->prefix( 'advanced_title' ),
 			'type' => 'title',
 		) );
 
 		$cmb->add_field( array(
-			'name' => esc_html__( 'URL Auto-login Key', 'cgda' ),
-			'desc' => esc_html__( 'Set the key (parameter name) that will be used to auto-login the visitor and gain access to the Customizer.', 'cgda' ),
+			'name' => esc_html__( 'URL Auto-login Key', 'backstage' ),
+			'desc' => esc_html__( 'Set the key (parameter name) that will be used to auto-login the visitor and gain access to the Customizer.', 'backstage' ),
 			'id'   => $this->prefix( 'auto_login_key' ),
 			'type' => 'text',
-			'default' => CGDA::$default_auto_login_key,
+			'default' => Backstage::$default_auto_login_key,
 			'attributes' => array(
 				'required' => true,
 			),
@@ -366,7 +366,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 		$current_screen = get_current_screen();
 
 		if ( ! empty( $current_screen ) && $current_screen instanceof WP_Screen ) {
-			if ( in_array( $current_screen->id, array( 'appearance_page_cgda_options', 'settings_page_cgda_options-network' ) ) ) {
+			if ( in_array( $current_screen->id, array( 'appearance_page_backstage_options', 'settings_page_backstage_options-network' ) ) ) {
 				return true;
 			}
 		}
@@ -376,14 +376,14 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 
 	public function register_admin_scripts() {
 		// The styles.
-		wp_register_style( $this->prefix( 'admin-style' ), plugins_url( 'assets/css/admin.css', CGDA_Plugin()->get_file() ), array(), CGDA_Plugin()->get_version() );
+		wp_register_style( $this->prefix( 'admin-style' ), plugins_url( 'assets/css/admin.css', Backstage_Plugin()->get_file() ), array(), Backstage_Plugin()->get_version() );
 
-		wp_register_script( $this->prefix( 'settings-js' ), plugins_url( 'assets/js/settings-page.js', CGDA_Plugin()->get_file() ),
+		wp_register_script( $this->prefix( 'settings-js' ), plugins_url( 'assets/js/settings-page.js', Backstage_Plugin()->get_file() ),
 			array(
 				'jquery',
 				$this->prefix( 'cmb2-conditionals' ),
 				'wp-api',
-			), CGDA_Plugin()->get_version() );
+			), Backstage_Plugin()->get_version() );
 	}
 
 	public function enqueue_admin_scripts() {
@@ -408,7 +408,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 * @return mixed
 	 */
 	public function get_option( $id, $default = false ) {
-		if ( CGDA_Plugin()->is_plugin_network_activated() ) {
+		if ( Backstage_Plugin()->is_plugin_network_activated() ) {
 			$options = get_site_option( self::$key );
 		} else {
 			$options = get_option( self::$key );
@@ -444,7 +444,7 @@ class CGDA_Settings extends CGDA_Singleton_Registry {
 	 * @return string
 	 */
 	public function prefix( $option, $private = false ) {
-		$option = cgda_prefix( $option );
+		$option = backstage_prefix( $option );
 
 		if ( true === $private ) {
 			return '_' . $option;

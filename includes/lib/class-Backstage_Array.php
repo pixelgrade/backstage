@@ -1,15 +1,15 @@
 <?php
 /**
- * Document for class CGDA_Array.
+ * Document for class Backstage_Array.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'CGDA_Array' ) ) :
+if ( ! class_exists( 'Backstage_Array' ) ) :
 
 /**
  * This is a utility class that groups all our array related helper functions.
@@ -18,7 +18,7 @@ if ( ! class_exists( 'CGDA_Array' ) ) :
  * @author      Pixelgrade
  * @version     1.0.0
  */
-class CGDA_Array {
+class Backstage_Array {
 	/**
 	 * Insert a value or key/value pair before a specific key in an array.  If key doesn't exist, value is prepended
 	 * at the beginning of the array.

@@ -1,8 +1,8 @@
 <?php
 /**
- * Document for class CGDA_Metaboxes.
+ * Document for class Backstage_Metaboxes.
  *
- * @package Customizer-Guest-Demo-Access
+ * @package Backstage
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author      Pixelgrade
  * @since       1.0.0
  */
-class CGDA_Metaboxes extends CGDA_Singleton_Registry {
+class Backstage_Metaboxes extends Backstage_Singleton_Registry {
 
 	/**
 	 * Prefix for all of our metas or options.
@@ -69,7 +69,7 @@ class CGDA_Metaboxes extends CGDA_Singleton_Registry {
 	}
 
 	public function register_admin_scripts() {
-		wp_register_script( cgda_prefix( 'cmb2-conditionals' ), plugins_url( 'assets/js/cmb2-conditionals.js', CGDA_Plugin::getInstance()->get_file() ), array('jquery'), '1.0.4');
+		wp_register_script( backstage_prefix( 'cmb2-conditionals' ), plugins_url( 'assets/js/cmb2-conditionals.js', Backstage_Plugin::getInstance()->get_file() ), array('jquery'), '1.0.4');
 	}
 
 	/**

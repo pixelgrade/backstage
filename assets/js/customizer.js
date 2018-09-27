@@ -11,32 +11,32 @@
             $('#customize-header-actions .customize-controls-close').remove();
             $('#customize-header-actions .customize-controls-preview-toggle').remove();
 
-            if ( ( typeof cgda.hide_info !== "undefined" && cgda.hide_info != "" ) ) {
+            if ( ( typeof backstage.hide_info !== "undefined" && backstage.hide_info != "" ) ) {
                 $('#customize-info').remove();
             }
 
             // Make sure that there are no loose ends.
             // api.notifications.remove( 'autosave_available' );
 
-            let button_template = wp.template('cgda-customizer-button');
-            $('#customize-save-button-wrapper').html(button_template(cgda));
+            let button_template = wp.template('backstage-customizer-button');
+            $('#customize-save-button-wrapper').html(button_template(backstage));
 
-            if ( typeof cgda.notice_text !== "undefined" && cgda.notice_text != "" ) {
+            if ( typeof backstage.notice_text !== "undefined" && backstage.notice_text != "" ) {
                 // Handle the button and the notice
-                let notice_template = wp.template('cgda-customizer-notice'),
-                    noticeType = (typeof cgda.notice_type !== "undefined") ? cgda.notice_type : 'info',
-                    dismissible = ( typeof cgda.notice_dismissible === "undefined" || cgda.notice_dismissible == "" ) ? false : true;
+                let notice_template = wp.template('backstage-customizer-notice'),
+                    noticeType = (typeof backstage.notice_type !== "undefined") ? backstage.notice_type : 'info',
+                    dismissible = ( typeof backstage.notice_dismissible === "undefined" || backstage.notice_dismissible == "" ) ? false : true;
 
-                api.notifications.add('cgda_notice', new wp.customize.Notification(
-                    'cgda_notice',
+                api.notifications.add('backstage_notice', new wp.customize.Notification(
+                    'backstage_notice',
                     {
                         type: noticeType,
-                        message: notice_template(cgda),
+                        message: notice_template(backstage),
                         dismissible: dismissible
                     }
                 ));
 
-                // $('#customize-info').before(notice_template(cgda));
+                // $('#customize-info').before(notice_template(backstage));
             }
 
             // Handle preventing the default behavior like prompting for unsaved changes and such.
