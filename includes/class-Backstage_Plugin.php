@@ -100,7 +100,7 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	 * @access  private
 	 * @since   1.0.0
 	 */
-	private $minimalRequiredPhpVersion = 5.2;
+	private $minimalRequiredPhpVersion = '5.2.4';
 
 	protected function __construct( $file, $version = '1.0.0' ) {
 		// The main plugin file (the one that loads all this).
