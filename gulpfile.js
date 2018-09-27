@@ -95,6 +95,7 @@ gulp.task( 'build', ['copy-folder'], function() {
 		'socket/gulpfile.js',
 		'socket/package.json',
 		'socket/semantic.json',
+        'README.md',
 	];
 
 	files_to_remove.forEach( function( e, k ) {
@@ -102,9 +103,6 @@ gulp.task( 'build', ['copy-folder'], function() {
 	} );
 
 	del.sync(files_to_remove, {force: true});
-
-	// Empty the logs/http_requests.txt file
-	fs.writeFile('../build/' + plugin + '/logs/http_requests.txt', '');
 } );
 
 /**
