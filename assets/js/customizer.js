@@ -1,4 +1,4 @@
-(
+;(
 	function( $, exports, wp ) {
 
 		// when the customizer is ready
@@ -8,6 +8,7 @@
 
             // Remove everything it is not needed
             $('#save').remove();
+            $('#customize-outer-theme-controls').remove();
             $('#customize-header-actions .customize-controls-close').remove();
             $('#customize-header-actions .customize-controls-preview-toggle').remove();
 
@@ -35,15 +36,12 @@
                         dismissible: dismissible
                     }
                 ));
-
-                // $('#customize-info').before(notice_template(backstage));
             }
 
             // Handle preventing the default behavior like prompting for unsaved changes and such.
             api.bind( 'change', function() {
                 $( window ).off( 'beforeunload.customize-confirm' );
             } );
-            // api.state( 'saved' ).set( true );
 
             // We need to modify the way the query is constructed when refreshing the preview.
             // We want to always send all the modified values since they will not come from the backend via the changeset logic.
@@ -55,9 +53,6 @@
                         nonce: this.nonce.preview,
                         customize_changeset_uuid: api.settings.changeset.uuid
                     };
-                    // if ( api.settings.changeset.autosaved || ! api.state( 'saved' ).get() ) {
-                    //     queryVars.customize_autosaved = 'on';
-                    // }
 
                     // Send all the changedValues.
                     queryVars.customized = JSON.stringify( changedValues );
@@ -70,13 +65,6 @@
                     changedValues[ setting.id ] = setting.get();
                 } );
             }
-
-            // Mark all settings as clean to prevent another call to requestChangesetUpdate.
-            // api.each( function( setting ) {
-            //     setting._dirty = false;
-            // });
-
-
 		} );
 	}
 )( jQuery, window, wp );

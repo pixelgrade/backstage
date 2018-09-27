@@ -88,7 +88,6 @@ class Backstage extends Backstage_Singleton_Registry {
 		add_action( 'customize_controls_init', array( $this, 'register_admin_customizer_scripts' ), 10 );
 		add_action( 'customize_controls_enqueue_scripts', array( $this, 'enqueue_admin_customizer_scripts' ), 10 );
 		add_action( 'customize_controls_print_footer_scripts', array( $this, 'customize_controls_templates' ) );
-		add_action( 'customize_preview_init', array( $this, 'enqueue_customizer_preview_scripts' ) );
 
 		/* =================================
 		 * Markup outputted in the frontend.
@@ -477,7 +476,7 @@ class Backstage extends Backstage_Singleton_Registry {
 	 */
 	public function register_admin_customizer_scripts() {
 
-		wp_register_script( backstage_prefix('customizer' ), plugins_url( 'assets/js/customizer.js', Backstage_Plugin()->get_file() ), array( 'jquery' ), Backstage_Plugin()->get_version() );
+		wp_register_script( backstage_prefix('customizer' ), plugins_url( 'assets/js/customizer.js', Backstage_Plugin()->get_file() ), array( 'jquery', 'customize-controls' ), Backstage_Plugin()->get_version() );
 	}
 
 	/**
@@ -498,19 +497,6 @@ class Backstage extends Backstage_Singleton_Registry {
 				'hide_info' => Backstage_Plugin()->settings->get_option( 'customizer_hide_info', false ),
 			) ) );
 		}
-	}
-
-	/**
-	 * Enqueue the Customizer preview file.
-	 */
-	public function enqueue_customizer_preview_scripts() {
-		wp_enqueue_script(
-			backstage_prefix( 'customizer_preview' ),
-			plugins_url( 'assets/js/customizer_preview.js', Backstage_Plugin()->get_file() ),
-			array( 'jquery', 'customize-preview' ),
-			Backstage_Plugin()->get_version(),
-			true
-		);
 	}
 
 	/**
