@@ -12,18 +12,21 @@
             $('#customize-header-actions .customize-controls-preview-toggle').remove();
 
             // Remove the Customizer info section, if we have been instructed to do so.
+            // The comparison is intentionaly not strict.
             if ( ( typeof backstage.hide_info !== "undefined" && backstage.hide_info != "" ) ) {
                 $('#customize-info').remove();
             }
 
             let button_template = wp.template('backstage-customizer-button');
-            
+
             $('#customize-save-button-wrapper').html(button_template(backstage));
 
+            // The comparison is intentionaly not strict.
             if ( typeof backstage.notice_text !== "undefined" && backstage.notice_text != "" ) {
                 // Handle the button and the notice
                 let notice_template = wp.template('backstage-customizer-notice'),
                     noticeType = (typeof backstage.notice_type !== "undefined") ? backstage.notice_type : 'info',
+                    // The comparison is intentionaly not strict.
                     dismissible = ( typeof backstage.notice_dismissible === "undefined" || backstage.notice_dismissible == "" ) ? false : true;
 
                 api.notifications.add('backstage_notice', new wp.customize.Notification(
