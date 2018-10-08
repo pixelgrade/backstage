@@ -1,4 +1,4 @@
-=== Backstage ===
+=== Backstage - Customizer Demo Access ===
 Contributors: pixelgrade, vlad.olaru
 Tags: customizer, demo, guest access, theme preview, site customization, sandbox, preview options
 Requires at least: 4.9.0
@@ -6,9 +6,9 @@ Tested up to: 4.9.8
 Requires PHP: 5.4.0
 Stable tag: 1.0.0
 License: GPL v2.0 (or later)
-License URI: http://www.gnu.org/licenses/gpl-2.0.html 
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Customizer Demo Access for Everyone
+Showcase your product's flexibility the same way users will harness it, in the Customizer. All elegant and secure.
 
 == Description ==
 
@@ -25,6 +25,7 @@ We know that each of us has their own design sensibilities and particular techni
 You can change both the *frontend and the Customizer behavior* of the plugin.
 
 For the frontend, you have several options:
+
 * For most the default HTML and CSS styling will be just fine. You can customize the button text.
 * You can choose to provide your own button HTML and CSS.
 * Or you can go all custom and handle the button yourself.
@@ -34,15 +35,18 @@ When it comes to the Customizer guest experience, the plugin will introduce a *B
 = Compatible =
 
 Backstage should work with *any type of Customizer options* you have on your site:
+
 * WordPress core controls;
 * Colors and fonts controls;
 * Layout and behavioral controls like content width or blog layout.
 
 The plugin is compatible with any type of WordPress installation:
+
 * Works with **regular, single installations;**
 * Works with **Multisite setups;** you can activate the plugin **network-wide or per-blog.**
 
 The following **limitations** are inherent to the reality of having a sandboxed Customizer:
+
 * File uploads are not allowed; due to this, any controls that need file upload will not be allowed to be modified;
 * Any time a visitor leaves the Customizer, any customization is lost and when he or she enters again, all will start clean;
 
@@ -62,6 +66,10 @@ Installing "Backstage" can be done either by searching for "Backstage" via the `
 2. Upload the ZIP file through the `Plugins → Add New → Upload` screen in your WordPress dashboard.
 3. Activate the plugin through the `Plugins` menu in WordPress.
 4. Head over to `Appearance → Backstage` (or `Network Settings → Backstage` if network-wide activated) and set it up.
+
+== Translations ==
+
+You can translate Backstage on [__translate.wordpress.org__](https://translate.wordpress.org/projects/wp-plugins/backstage).
 
 == Issues ==
 
@@ -83,7 +91,7 @@ There is no point in showcasing a customization experience that is not consisten
 
 = When I navigate in the preview window, customizations don't get applied? =
 
-Sometimes, WordPress themes will come with custom JavaScript that will bind to *click events_ and stop their propagation. Due to this, the Customizer (not our's) logic can't catch that click and go the proper way of refreshing the preview window. We really have not way around that.
+Sometimes, WordPress themes will come with custom JavaScript that will bind to *click events* and stop their propagation. Due to this, the Customizer (not our's) logic can't catch that click and go the proper way of refreshing the preview window. We really have not way around that.
 
 = Can I choose to hide certain Customizer sections or panels? =
 
@@ -91,9 +99,9 @@ The plugin doesn't provide this functionality as it is quite difficult to map it
 
 = I am a developer. Can I easily change how things work? =
 
-We are also developers (and designers, and marketers, and support people...) just like you. We know how important it is that plugins get coded in a open, thoughtful manner that is friendly towards those that have custom requirements.
+We are also developers (and designers, and marketers, and support people...) just like you. We know how important it is that plugins get coded in an open, thoughtful manner that is friendly towards those that have custom requirements.
 
-The plugin provides actions and filters in all the right places allowing you introduce custom logic just about anywhere, if the need arises.
+The plugin provides *actions and filters* in all the right places allowing you to *introduce custom logic* just about anywhere, if the need arises.
 
 == Credits ==
 
@@ -103,5 +111,5 @@ The plugin provides actions and filters in all the right places allowing you int
 == Changelog ==
 
 = 1.0 =
-* 2018-09-27
+* 2018-10-05
 * Initial release
