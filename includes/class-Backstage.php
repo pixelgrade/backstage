@@ -619,6 +619,23 @@ class Backstage extends Backstage_Singleton_Registry {
 
 			$html .= '</div>' . PHP_EOL;
 			$html .= '</div>' . PHP_EOL;
+
+			// Add a piece of JavaScript that will try to ensure that when clicking the button,
+			// we will bust from any iframe since the Customizer doesn't work well when opened in an iframe.
+			$html .= '<script>
+	(function(window) {
+		var button = document.getElementsByClassName("backstage-customizer-access-link")[0];
+		if (typeof button !== "undefined") {
+			button.addEventListener("click", function(e) {
+				// If we are in an iframe, bust out of it on click.
+				if (window.top.location !== window.location) {
+					e.preventDefault();
+					window.top.location = e.srcElement.attributes.href.textContent;
+				}
+			})
+		}
+	})(this)
+</script>';
 		}
 
 		/**
