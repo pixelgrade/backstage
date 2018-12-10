@@ -2,7 +2,7 @@
 Contributors: pixelgrade, vlad.olaru
 Tags: customizer, demo, guest access, theme preview, site customization, sandbox, preview options
 Requires at least: 4.9.0
-Tested up to: 4.9.8
+Tested up to: 5.0.0
 Requires PHP: 5.4.0
 Stable tag: 1.0.0
 License: GPL v2.0 (or later)
@@ -109,6 +109,11 @@ The plugin provides *actions and filters* in all the right places allowing you t
 * [CMB2 Conditionals](https://github.com/jcchavezs/cmb2-conditionals/) plugin for CMB2 - License: GPLv2 or later
 
 == Changelog ==
+
+= 1.1 =
+* 2018-12-10
+* Added frame busting when in an iframe because the Customizer doesn't play well when opened in an iframe.
+* Tested with WordPress 5.0.
 
 = 1.0 =
 * 2018-10-05
