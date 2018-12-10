@@ -4,7 +4,7 @@ Tags: customizer, demo, guest access, theme preview, site customization, sandbox
 Requires at least: 4.9.0
 Tested up to: 5.0.0
 Requires PHP: 5.4.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
