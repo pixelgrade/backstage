@@ -3,15 +3,10 @@
 	"devDependencies": {
 		"del": "*",
 		"es6-promise": "*",
-		"gulp": "*",
-		"gulp-chmod": "*",
-		"gulp-concat": "~2.1.7",
-		"gulp-exec": "~2.0.1",
-		"gulp-load-plugins": "*",
-		"gulp-ignore": "*",
-		"gulp-notify": "*",
-		"gulp-rename": "*",
-		"gulp-replace": "~0.4.0",
-		"gulp-rsync": "*"
+		"gulp": "^4.0.2",
+		"gulp-exec": "^3.0.2",
+		"gulp-load-plugins": "^2.0.0",
+		"gulp-replace": "^1.0.0",
+		"gulp-rsync": "^0.0.8"
 	}
 }
