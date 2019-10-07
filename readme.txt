@@ -2,9 +2,9 @@
 Contributors: pixelgrade, vlad.olaru
 Tags: customizer, demo, guest access, theme preview, site customization, sandbox, preview options
 Requires at least: 4.9.0
-Tested up to: 5.0.0
+Tested up to: 5.2.3
 Requires PHP: 5.4.0
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,6 +109,12 @@ The plugin provides *actions and filters* in all the right places allowing you t
 * [CMB2 Conditionals](https://github.com/jcchavezs/cmb2-conditionals/) plugin for CMB2 - License: GPLv2 or later
 
 == Changelog ==
+
+= 1.2 =
+* 2019-10-07
+* Improved behaviour when working within multisite settings and the plugin is activated on a per site basis.
+* Improved security checks to prevent edge-cases on multisite installations.
+* Tested with WordPress 5.2.3.
 
 = 1.1 =
 * 2018-12-10

@@ -160,8 +160,8 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	 */
 	public function register_hooks() {
 		/* Handle the install and uninstall logic. */
-		register_activation_hook( $this->file, array( 'Backstage_Plugin', 'install' ) );
-//		register_deactivation_hook( $this->file, array( 'Backstage_Plugin', 'uninstall' ) );
+		register_activation_hook( $this->file, array( 'Backstage_Plugin', 'activate' ) );
+		register_deactivation_hook( $this->file, array( 'Backstage_Plugin', 'deactivate' ) );
 		register_uninstall_hook( $this->file, array( 'Backstage_Plugin', 'uninstall' ) );
 
 		add_action( 'admin_init', array( $this, 'check_setup' ) );
@@ -211,26 +211,42 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	}
 
 	/**
-	 * Install everything needed.
+	 * Setup everything needed on plugin activation.
 	 */
-	public static function install() {
+	public static function activate( $network_wide = false ) {
 
 		// Make sure the needed user role exists.
-		Backstage::maybe_create_user_role();
+		Backstage::maybe_create_user_role( $network_wide );
 
 		// Make sure that the needed user exists.
-		Backstage::maybe_create_customizer_user();
+		Backstage::maybe_create_customizer_user( $network_wide );
+	}
+
+	/**
+	 * Remove anything related to the user and capabilities on plugin deactivation.
+	 */
+	public static function deactivate( $network_deactivating = false ) {
+
+		// Make sure that the user is removed.
+		Backstage::maybe_remove_customizer_user( $network_deactivating );
+
+		// Make sure that the user role is removed.
+		Backstage::maybe_remove_user_role( $network_deactivating );
 	}
 
 	/**
 	 * Uninstall everything we added.
 	 */
 	public static function uninstall() {
+
+		// If we are in a multisite installation, we need to remove data from all the sites.
+		$network_wide = is_multisite();
+
 		// Make sure that the user is removed.
-		Backstage::maybe_remove_customizer_user();
+		Backstage::maybe_remove_customizer_user( $network_wide );
 
 		// Make sure that the user role is removed.
-		Backstage::maybe_remove_user_role();
+		Backstage::maybe_remove_user_role( $network_wide );
 
 		// Remove any data saved in the DB.
 		Backstage_Settings::cleanup();
@@ -246,12 +262,21 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	}
 
 	/**
-	 * Get the plugin main file.
+	 * Get the plugin main file absolute path.
 	 *
 	 * @return string
 	 */
 	public function get_file() {
 		return $this->file;
+	}
+
+	/**
+	 * Get the plugin basename (`directory/main_file.php`) that uniquely identifies each plugin.
+	 *
+	 * @return string
+	 */
+	public function get_basename() {
+		return plugin_basename( $this->file );
 	}
 
 	/**
