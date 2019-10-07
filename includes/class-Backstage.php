@@ -215,10 +215,12 @@ class Backstage extends Backstage_Singleton_Registry {
 	 * Create Customizer user if user not exists.
 	 *
 	 * @param bool $network_wide
+	 *
+	 * @return int|false The user id or false on failure.
 	 */
 	public static function maybe_create_customizer_user( $network_wide = false ) {
-
-		if ( ! username_exists( self::$username ) ) {
+		$user_id = username_exists( self::$username );
+		if ( ! $user_id ) {
 			// Generate a random password. This is not actually used anywhere, so no one needs to know it.
 			$password = wp_generate_password();
 
@@ -231,7 +233,7 @@ class Backstage extends Backstage_Singleton_Registry {
 			$user_id = wp_insert_user( $new_user_data );
 			if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
 				Backstage_Plugin::add_admin_notice( array( 'Backstage', 'user_creation_error_notice' ) );
-				return;
+				return false;
 			}
 
 			if ( $network_wide && is_multisite() ) {
@@ -241,6 +243,8 @@ class Backstage extends Backstage_Singleton_Registry {
 				}
 			}
 		}
+
+		return $user_id;
 	}
 
 	/**

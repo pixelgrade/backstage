@@ -109,12 +109,22 @@ abstract class Backstage_Plugin_Init extends Backstage_Singleton_Registry {
 		$newVersion   = $this->_version;
 		$new_versions = array();
 
-		if ( $this->is_version_less_than( $savedVersion, $newVersion ) ) {
-			$new_versions[] = $newVersion;
+		// If the current version is smaller than the previous one, save it.
+		if ( $this->is_version_less_than( $newVersion, $savedVersion ) ) {
+			$this->save_version_number();
+			return;
 		}
 
-		// Post-upgrade, save the new version in the options.
-		if ( $upgradeOk && $savedVersion !== $newVersion ) {
+		if ( $this->is_version_less_than( $savedVersion, $newVersion ) ) {
+			$new_versions[] = $newVersion;
+
+			define( 'BACKSTAGE_DOING_UPGRADE', true );
+			$upgrade_routines = new Backstage_Upgrade_Routines( $savedVersion, $newVersion, trailingslashit( Backstage_Plugin()->get_basepath() ) . 'includes/migrations');
+			$upgrade_routines->run();
+		}
+
+		// Post-upgrade, display notices and save the new version in the options.
+		if ( $upgradeOk && ! empty( $new_versions ) ) {
 			$this->new_versions = $new_versions;
 			add_action( 'admin_notices', array( $this, 'notice_new_version' ) );
 			$this->save_version_number();

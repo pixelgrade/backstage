@@ -113,17 +113,18 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 		$this->plugin_baseuri  = plugin_dir_url( $file );
 		$this->base_url        = home_url();
 
-		// Initialize the options API.
-		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/lib/class-Backstage_Options.php' );
-		if ( is_null( $this->options ) ) {
-			$this->options = Backstage_Options::getInstance( 'backstage' );
-		}
-
 		parent::__construct( 'Backstage' );
 
 		// Only load and run the init function if we know PHP version can parse it.
 		if ( $this->php_version_check() ) {
-			$this->upgrade();
+			// Initialize the options API.
+			require_once( trailingslashit( $this->plugin_basepath ) . 'includes/lib/class-Backstage_Options.php' );
+			if ( is_null( $this->options ) ) {
+				$this->options = Backstage_Options::getInstance( 'backstage' );
+			}
+
+			// Make sure the upgrade routines class is loaded.
+			require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-Backstage_Upgrade_Routines.php' );
 			$this->init();
 		}
 	}
@@ -164,7 +165,8 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 		register_deactivation_hook( $this->file, array( 'Backstage_Plugin', 'deactivate' ) );
 		register_uninstall_hook( $this->file, array( 'Backstage_Plugin', 'uninstall' ) );
 
-		add_action( 'admin_init', array( $this, 'check_setup' ) );
+		add_action( 'admin_init', array( $this, 'upgrade' ), 5 );
+		add_action( 'admin_init', array( $this, 'check_setup' ), 10 );
 
 		add_action( 'wpmu_new_blog', array( 'Backstage', 'multisite_maybe_add_user_to_new_blog' ), 10, 1 );
 
