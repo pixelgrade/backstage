@@ -114,6 +114,7 @@ The plugin provides *actions and filters* in all the right places allowing you t
 * 2019-10-07
 * Improved behaviour when working within multisite settings and the plugin is activated on a per site basis.
 * Improved security checks to prevent edge-cases on multisite installations.
+* Added upgrade routines for smoother plugin updates.
 * Tested with WordPress 5.2.3.
 
 = 1.1 =
