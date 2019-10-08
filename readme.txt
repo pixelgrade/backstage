@@ -4,7 +4,7 @@ Tags: customizer, demo, guest access, theme preview, site customization, sandbox
 Requires at least: 4.9.0
 Tested up to: 5.2.3
 Requires PHP: 5.4.0
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,7 @@ The plugin provides *actions and filters* in all the right places allowing you t
 = 1.3 =
 * 2019-10-08
 * Added new settings and logic for enabling a REST API endpoint to fetch the secure customizer access link.
+* Update CMB2 dependency to latest version (2.6.0).
 
 = 1.2 =
 * 2019-10-07
