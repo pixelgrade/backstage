@@ -96,7 +96,7 @@ The plugin provides actions and filters in all the right places allowing you int
 ## Changelog
 
 ### 1.3.0
-* 2019-10-08
+_2019-10-08_
 * Added new settings and logic for enabling a REST API endpoint to fetch the secure customizer access link.
 
 ### 1.2.0
