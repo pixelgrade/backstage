@@ -110,6 +110,10 @@ The plugin provides *actions and filters* in all the right places allowing you t
 
 == Changelog ==
 
+= 1.3 =
+* 2019-10-08
+* Added new settings and logic for enabling a REST API endpoint to fetch the secure customizer access link.
+
 = 1.2 =
 * 2019-10-07
 * Improved behaviour when working within multisite settings and the plugin is activated on a per site basis.

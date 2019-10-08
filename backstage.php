@@ -4,7 +4,7 @@
  * Plugin Name: Backstage
  * Plugin URI:  https://wordpress.org/plugins/customizer-guest-demo-access
  * Description: Customizer Demo Access for Everyone
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: Pixelgrade
  * Author URI: https://pixelgrade.com
  * Author Email: contact@pixelgrade.com
@@ -35,7 +35,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'extras.php' );
 function Backstage_Plugin() {
 	require_once( plugin_dir_path( __FILE__ ) . 'includes/class-Backstage_Plugin.php' );
 
-	return Backstage_Plugin::getInstance( __FILE__, '1.2.0' );
+	return Backstage_Plugin::getInstance( __FILE__, '1.3.0' );
 }
 
 Backstage_Plugin();
