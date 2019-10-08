@@ -85,6 +85,14 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	 */
 	public $backstage = null;
 
+	/**
+	 * REST API class class object.
+	 * @var Backstage_REST_Controller_v1
+	 * @access  public
+	 * @since   1.0.0
+	 */
+	public $rest_api = null;
+
 
 	/**
 	 * The main plugin file.
@@ -152,6 +160,12 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 			$this->backstage = Backstage::getInstance( $this );
 		}
 
+		/* Initialize the REST API logic. */
+		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-Backstage_REST_Controller_v1.php' );
+		if ( is_null( $this->rest_api ) ) {
+			$this->rest_api = new Backstage_REST_Controller_v1();
+		}
+
 		// Register all the needed hooks
 		$this->register_hooks();
 	}
@@ -172,6 +186,8 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 
 		/* Handle localisation. */
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
+
+		add_action( 'rest_api_init', array( $this->rest_api, 'register_routes' ), 5 );
 	}
 
 	/**

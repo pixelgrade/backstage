@@ -61,3 +61,8 @@ fieldset.group {
 #backstage_setup_page .cmb2-metabox-description {
     color: #959595;
 }
+
+#backstage_setup_page .cmb2-wrap .cmb-type-title.cmb2-id-backstage-rest-route-url-title {
+    margin-top: 0;
+    padding-left: 230px;
+}

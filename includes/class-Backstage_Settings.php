@@ -344,7 +344,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 
 		$cmb->add_field( array(
 			'name' => esc_html__( 'Advanced', 'backstage' ),
-			'desc' => 'Advanced options that you should take extra care when modifying them.',
+			'desc' => esc_html__( 'Advanced options that you should take extra care when modifying them.', 'backstage' ),
 			'id'   => $this->prefix( 'advanced_title' ),
 			'type' => 'title',
 		) );
@@ -360,6 +360,74 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 			),
 		) );
 
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Enable REST API Endpoint', 'backstage' ),
+			'desc' => esc_html__( 'Enable a REST API endpoint for dynamically fetching the secure URL to access the Customizer.', 'backstage' ),
+			'id'   => $this->prefix( 'enable_rest_api' ),
+			'type' => 'checkbox',
+		) );
+
+		if ( Backstage_Plugin()->is_plugin_network_activated() ) {
+			$rest_route_url_details = __( '<p>The plugin is network activated, but each blog in the network will have its own REST endpoint for fetching the customizer link.</p><p>Here is an example endpoint URL: <code>' . Backstage_Plugin()->rest_api->get_customizer_link_route_url() . '</code></p><p>To get the link for each blog in the network, replace the part before <code>/wp-json/</code> with the home URL of that blog.</p>', 'backstage');
+		} else {
+			$rest_route_url_details = __( '<p>Here is the endpoint URL to use: <code>' . Backstage_Plugin()->rest_api->get_customizer_link_route_url() . '</code></p>', 'backstage');
+		}
+		$rest_route_url_details .= __( '<p>Use the "GET" HTTP method. The successful response will be a JSON, with the following structure:</p>', 'backstage' );
+		$rest_route_url_details .= '<p><pre>
+{ 
+   "code":"success",
+   "message":"",
+   "data":{ 
+      "url":"the-customizer-url-ready-to-use"
+   }
+}
+</pre></p>';
+
+		$cmb->add_field( array(
+			'name' => '',
+			'desc' => wp_kses_post( $rest_route_url_details ),
+			'id'   => $this->prefix( 'rest_route_url_title' ),
+			'type' => 'title',
+			'attributes' => array(
+				'data-conditional-id'    => $this->prefix( 'enable_rest_api' ),
+				'data-conditional-value' => 'on',
+			),
+		) );
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'REST API Secret Key Check', 'backstage' ),
+			'desc' => esc_html__( 'Enable this to only provide the customizer link response to REST API requests that provide the secret key bellow.', 'backstage' ),
+			'id'   => $this->prefix( 'enable_rest_api_secret_key' ),
+			'type' => 'checkbox',
+			'attributes' => array(
+				'data-conditional-id'    => $this->prefix( 'enable_rest_api' ),
+				'data-conditional-value' => 'on',
+			),
+		) );
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Secret Key', 'backstage' ),
+			'desc' => esc_html__( 'Set a secret (private) key that must be provided in each REST API request (under the name `secret_key`). In a Multisite installation, with the plugin network activated, this key is shared across all blogs in the network.', 'backstage' ),
+			'id'   => $this->prefix( 'rest_api_secret_key' ),
+			'type' => 'text',
+			'default' => $this->get_rest_api_default_secret_key(),
+			'attributes' => array(
+				'data-conditional-id'    => $this->prefix( 'enable_rest_api_secret_key' ),
+				'data-conditional-value' => 'on',
+			),
+		) );
+
+	}
+
+	protected function get_rest_api_default_secret_key() {
+		$default_secret_key = $this->get_option( 'rest_api_default_secret_key' );
+		if ( empty( $default_secret_key ) ) {
+			// We will save the default in the DB so it stays the same, but unique to each installation.
+			$default_secret_key = wp_generate_password( 20, false, false );
+			$this->update_option( 'rest_api_default_secret_key', $default_secret_key );
+		}
+
+		return $default_secret_key;
 	}
 
 	public function is_settings_page() {
@@ -417,6 +485,32 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 			return $options[ $this->prefix( $id ) ];
 		}
 		return $default;
+	}
+
+	/**
+	 * Update an option, even before the CMB2 has loaded.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $id
+	 * @param mixed $value
+	 */
+	public function update_option( $id, $value ) {
+		if ( Backstage_Plugin()->is_plugin_network_activated() ) {
+			$options = get_site_option( self::$key );
+			if ( empty( $options ) ) {
+				$options = array();
+			}
+			$options[ $this->prefix( $id ) ] = $value;
+			update_site_option( self::$key, $options );
+		} else {
+			$options = get_option( self::$key );
+			if ( empty( $options ) ) {
+				$options = array();
+			}
+			$options[ $this->prefix( $id ) ] = $value;
+			update_option( self::$key, $options );
+		}
 	}
 
 	/**

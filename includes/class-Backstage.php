@@ -377,7 +377,17 @@ class Backstage extends Backstage_Singleton_Registry {
 
 				do_action( 'backstage_did_auto_login' );
 
-				wp_safe_redirect( esc_url( add_query_arg( 'url', $_GET['return_url'], admin_url( 'customize.php' ) ) ) );
+				// We will put the return URL in the url key because the return_url key is used by the Customizer logic and we want to avoid collisions.
+				$url = add_query_arg( 'url', $_GET['return_url'], admin_url( 'customize.php' ) );
+
+				if ( ! empty( $_GET['button_text'] ) ) {
+					$url = add_query_arg( 'button_text', $_GET['button_text'], $url );
+				}
+
+				// Allow others to have say in this.
+				$url = apply_filters( 'backstage_auto_login_redirect_url', $url );
+
+				wp_safe_redirect( esc_url( $url ) );
 				die();
 			}
 		}
@@ -557,7 +567,7 @@ class Backstage extends Backstage_Singleton_Registry {
 			wp_enqueue_script( backstage_prefix( 'customizer' ) );
 
 			wp_localize_script( backstage_prefix( 'customizer' ), 'backstage', apply_filters( 'backstage_customizer_localized_data', array(
-				'button_text'    => esc_html( Backstage_Plugin()->settings->get_option( 'customizer_back_button_text', __( 'Back to Demo', 'backstage' ) ) ),
+				'button_text'    => esc_html( ! empty( $_GET['button_text'] ) ? $_GET['button_text'] : Backstage_Plugin()->settings->get_option( 'customizer_back_button_text', __( 'Back to Demo', 'backstage' ) ) ),
 				'button_link'    => esc_url( ! empty( $_GET['url'] ) ? $_GET['url'] : get_home_url() ),
 				'notice_type' => esc_attr( trim(  Backstage_Plugin()->settings->get_option( 'customizer_notice_type', 'info' ) ) ),
 				'notice_text' => trim( Backstage_Plugin()->settings->get_option( 'customizer_notice_text', __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'backstage' ) ) ),
