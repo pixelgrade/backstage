@@ -93,6 +93,24 @@ The plugin provides actions and filters in all the right places allowing you int
 
 ## Changelog
 
+## Changelog
+
+### 1.3.0
+_2019-10-08_
+* Added new settings and logic for enabling a REST API endpoint to fetch the secure customizer access link.
+
+### 1.2.0
+_2019-10-07_
+* Improved behaviour when working within multisite settings and the plugin is activated on a per site basis.
+* Improved security checks to prevent edge-cases on multisite installations.
+* Added upgrade routines for smoother plugin updates.
+* Tested with WordPress 5.2.3.
+
+### 1.1.0
+_2018-12-10_
+* Added frame busting when in an iframe because the Customizer doesn't play well when opened in an iframe.
+* Tested with WordPress 5.0.
+
 ### 1.0
-* 2018-09-27
+_2018-09-27_
 * Initial release

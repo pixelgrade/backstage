@@ -103,6 +103,36 @@ class Backstage extends Backstage_Singleton_Registry {
 	public static function check_setup() {
 
 		$all_good = true;
+
+		// Bail if the plugin is network activated and we are not in the network admin dashboard.
+		if ( Backstage_Plugin()->is_plugin_network_activated() ) {
+			if ( ! is_network_admin() ) {
+				return $all_good;
+			}
+
+			$sites = get_sites( array( 'fields' => 'ids' ) );
+			foreach ( $sites as $site_id ) {
+				switch_to_blog( $site_id );
+
+				if ( ! get_role( self::$user_role ) ) {
+					$all_good = false;
+					Backstage_Plugin::add_admin_notice( array( 'Backstage', 'user_role_missing_error_notice' ) );
+				}
+
+				if ( ! username_exists( self::$username ) ) {
+					$all_good = false;
+					Backstage_Plugin::add_admin_notice( array( 'Backstage', 'user_missing_error_notice' ) );
+				}
+
+				restore_current_blog();
+
+				// We take it one step at a time. No need to fill up the screen with multiple notifications.
+				if ( ! $all_good ) {
+					return $all_good;
+				}
+			}
+		}
+
 		if ( ! get_role( self::$user_role ) ) {
 			$all_good = false;
 			Backstage_Plugin::add_admin_notice( array( 'Backstage', 'user_role_missing_error_notice' ) );
@@ -118,35 +148,56 @@ class Backstage extends Backstage_Singleton_Registry {
 
 	/**
 	 * Handle the creation of the custom user role we are using to identify and restrict the auto logged in user.
+	 *
+	 * @param bool $network_wide
 	 */
-	public static function maybe_create_user_role() {
+	public static function maybe_create_user_role( $network_wide = false ) {
 
-		if ( ! get_role( self::$user_role ) ) {
+		// Customizer access user capabilities.
+		$user_capabilities = apply_filters( 'backstage_user_capabilities', array(
+			'read'               => true,
+			'edit_posts'         => false,
+			'delete_posts'       => false,
+			'edit_pages'         => false,
+			'edit_theme_options' => true,
+			'manage_options'     => true,
+			'customize'          => true,
+			'upload_files'       => false,
+		) );
 
-			// Customizer access user capabilities.
-			$user_capabilities = apply_filters( 'backstage_user_capabilities', array(
-				'read'               => true,
-				'edit_posts'         => false,
-				'delete_posts'       => false,
-				'edit_pages'         => false,
-				'edit_theme_options' => true,
-				'manage_options'     => true,
-				'customize'          => true,
-				'upload_files'       => false,
-			) );
+		if ( is_multisite() && $network_wide ) {
+			$sites = get_sites( array( 'fields' => 'ids' ) );
+			foreach ( $sites as $site_id ) {
+				switch_to_blog( $site_id );
 
+				add_role( self::$user_role, esc_html__( 'Customizer Preview', 'backstage' ), $user_capabilities );
+
+				restore_current_blog();
+			}
+		} else {
 			add_role( self::$user_role, esc_html__( 'Customizer Preview', 'backstage' ), $user_capabilities );
 		}
 	}
 
 	/**
 	 * Handle the removal of the created user role.
+	 *
+	 * @param bool $network_wide
 	 */
-	public static function maybe_remove_user_role() {
+	public static function maybe_remove_user_role( $network_wide = false ) {
 
-		if ( get_role( self::$user_role ) ) {
-			remove_role( self::$user_role );
+		if ( is_multisite() && $network_wide ) {
+			$sites = get_sites( array( 'fields' => 'ids' ) );
+			foreach ( $sites as $site_id ) {
+				switch_to_blog( $site_id );
+
+				remove_role( self::$user_role );
+
+				restore_current_blog();
+			}
 		}
+
+		remove_role( self::$user_role );
 	}
 
 	/**
@@ -162,10 +213,14 @@ class Backstage extends Backstage_Singleton_Registry {
 
 	/**
 	 * Create Customizer user if user not exists.
+	 *
+	 * @param bool $network_wide
+	 *
+	 * @return int|false The user id or false on failure.
 	 */
-	public static function maybe_create_customizer_user() {
-
-		if ( ! username_exists( self::$username ) ) {
+	public static function maybe_create_customizer_user( $network_wide = false ) {
+		$user_id = username_exists( self::$username );
+		if ( ! $user_id ) {
 			// Generate a random password. This is not actually used anywhere, so no one needs to know it.
 			$password = wp_generate_password();
 
@@ -178,31 +233,36 @@ class Backstage extends Backstage_Singleton_Registry {
 			$user_id = wp_insert_user( $new_user_data );
 			if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
 				Backstage_Plugin::add_admin_notice( array( 'Backstage', 'user_creation_error_notice' ) );
-				return;
+				return false;
 			}
 
-			// If we are in a multisite install, we need to add the user to all the of the sites.
-			if ( is_multisite() ) {
+			if ( $network_wide && is_multisite() ) {
 				$sites = get_sites( array( 'fields' => 'ids' ) );
 				foreach ( $sites as $site_id ) {
 					add_user_to_blog( $site_id, $user_id, self::$user_role );
 				}
 			}
 		}
+
+		return $user_id;
 	}
 
 	/**
-	 * Add our user to a newly created blog in a multisite environment.
+	 * Add our user to a newly created blog in a multisite environment, if the plugin is network-wide activated.
 	 *
 	 * @param int $site_id
 	 */
 	public static function multisite_maybe_add_user_to_new_blog( $site_id ) {
 		$user = get_user_by( 'login', self::$username );
+		// This should not happen. The user is created upon plugin activation.
+		// We will show a notice in the admin via self::check_setup()
 		if ( ! $user ) {
 			return;
 		}
 
-		add_user_to_blog( $site_id, $user->ID, self::$user_role );
+		if ( Backstage_Plugin()->is_plugin_network_activated() ) {
+			add_user_to_blog( $site_id, $user->ID, self::$user_role );
+		}
 	}
 
 	/**
@@ -229,16 +289,17 @@ class Backstage extends Backstage_Singleton_Registry {
 
 	/**
 	 * Handle the removal of the self created user.
+	 *
+	 * @param bool $network_wide
 	 */
-	public static function maybe_remove_customizer_user() {
+	public static function maybe_remove_customizer_user( $network_wide = false ) {
 
 		$user = get_user_by( 'login', self::$username );
 		if ( ! $user ) {
 			return;
 		}
 
-		// If we are in a multisite install, we need to remove the user from all the of the sites.
-		if ( is_multisite() ) {
+		if ( is_multisite() && $network_wide ) {
 			wpmu_delete_user( $user->ID );
 		} else {
 			wp_delete_user( $user->ID );
@@ -251,7 +312,7 @@ class Backstage extends Backstage_Singleton_Registry {
 	}
 
 	/**
-	 * Is the current logged in user our user?
+	 * Is the current logged-in user our user?
 	 *
 	 * @return bool
 	 */
@@ -316,7 +377,17 @@ class Backstage extends Backstage_Singleton_Registry {
 
 				do_action( 'backstage_did_auto_login' );
 
-				wp_safe_redirect( esc_url( add_query_arg( 'url', $_GET['return_url'], admin_url( 'customize.php' ) ) ) );
+				// We will put the return URL in the url key because the return_url key is used by the Customizer logic and we want to avoid collisions.
+				$url = add_query_arg( 'url', $_GET['return_url'], admin_url( 'customize.php' ) );
+
+				if ( ! empty( $_GET['button_text'] ) ) {
+					$url = add_query_arg( 'button_text', $_GET['button_text'], $url );
+				}
+
+				// Allow others to have say in this.
+				$url = apply_filters( 'backstage_auto_login_redirect_url', $url );
+
+				wp_safe_redirect( esc_url( $url ) );
 				die();
 			}
 		}
@@ -397,6 +468,13 @@ class Backstage extends Backstage_Singleton_Registry {
 		// Now we will check if the hash matches.
 		$auto_login_hash = wp_hash( urldecode( $_GET['return_url'] ) );
 		if ( urldecode( $_GET[ $auto_login_key ] ) !== $auto_login_hash ) {
+			return false;
+		}
+
+		// We will now do some extra checks, just to be sure that things are in proper order, server-side.
+		// In a multisite setting, we really want the plugin being active network-wide or active on the current blog.
+		// This should not normally happen, but it is best to be safe and not expose ourselves to some cross multisite blogs issues.
+		if ( is_multisite() && ! is_plugin_active( Backstage_Plugin()->get_basename() ) ) {
 			return false;
 		}
 
@@ -489,7 +567,7 @@ class Backstage extends Backstage_Singleton_Registry {
 			wp_enqueue_script( backstage_prefix( 'customizer' ) );
 
 			wp_localize_script( backstage_prefix( 'customizer' ), 'backstage', apply_filters( 'backstage_customizer_localized_data', array(
-				'button_text'    => esc_html( Backstage_Plugin()->settings->get_option( 'customizer_back_button_text', __( 'Back to Demo', 'backstage' ) ) ),
+				'button_text'    => esc_html( ! empty( $_GET['button_text'] ) ? $_GET['button_text'] : Backstage_Plugin()->settings->get_option( 'customizer_back_button_text', __( 'Back to Demo', 'backstage' ) ) ),
 				'button_link'    => esc_url( ! empty( $_GET['url'] ) ? $_GET['url'] : get_home_url() ),
 				'notice_type' => esc_attr( trim(  Backstage_Plugin()->settings->get_option( 'customizer_notice_type', 'info' ) ) ),
 				'notice_text' => trim( Backstage_Plugin()->settings->get_option( 'customizer_notice_text', __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'backstage' ) ) ),

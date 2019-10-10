@@ -85,6 +85,14 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	 */
 	public $backstage = null;
 
+	/**
+	 * REST API class class object.
+	 * @var Backstage_REST_Controller_v1
+	 * @access  public
+	 * @since   1.0.0
+	 */
+	public $rest_api = null;
+
 
 	/**
 	 * The main plugin file.
@@ -113,17 +121,18 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 		$this->plugin_baseuri  = plugin_dir_url( $file );
 		$this->base_url        = home_url();
 
-		// Initialize the options API.
-		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/lib/class-Backstage_Options.php' );
-		if ( is_null( $this->options ) ) {
-			$this->options = Backstage_Options::getInstance( 'backstage' );
-		}
-
 		parent::__construct( 'Backstage' );
 
 		// Only load and run the init function if we know PHP version can parse it.
 		if ( $this->php_version_check() ) {
-			$this->upgrade();
+			// Initialize the options API.
+			require_once( trailingslashit( $this->plugin_basepath ) . 'includes/lib/class-Backstage_Options.php' );
+			if ( is_null( $this->options ) ) {
+				$this->options = Backstage_Options::getInstance( 'backstage' );
+			}
+
+			// Make sure the upgrade routines class is loaded.
+			require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-Backstage_Upgrade_Routines.php' );
 			$this->init();
 		}
 	}
@@ -151,6 +160,12 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 			$this->backstage = Backstage::getInstance( $this );
 		}
 
+		/* Initialize the REST API logic. */
+		require_once( trailingslashit( $this->plugin_basepath ) . 'includes/class-Backstage_REST_Controller_v1.php' );
+		if ( is_null( $this->rest_api ) ) {
+			$this->rest_api = new Backstage_REST_Controller_v1();
+		}
+
 		// Register all the needed hooks
 		$this->register_hooks();
 	}
@@ -160,16 +175,19 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	 */
 	public function register_hooks() {
 		/* Handle the install and uninstall logic. */
-		register_activation_hook( $this->file, array( 'Backstage_Plugin', 'install' ) );
-//		register_deactivation_hook( $this->file, array( 'Backstage_Plugin', 'uninstall' ) );
+		register_activation_hook( $this->file, array( 'Backstage_Plugin', 'activate' ) );
+		register_deactivation_hook( $this->file, array( 'Backstage_Plugin', 'deactivate' ) );
 		register_uninstall_hook( $this->file, array( 'Backstage_Plugin', 'uninstall' ) );
 
-		add_action( 'admin_init', array( $this, 'check_setup' ) );
+		add_action( 'admin_init', array( $this, 'upgrade' ), 5 );
+		add_action( 'admin_init', array( $this, 'check_setup' ), 10 );
 
 		add_action( 'wpmu_new_blog', array( 'Backstage', 'multisite_maybe_add_user_to_new_blog' ), 10, 1 );
 
 		/* Handle localisation. */
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
+
+		add_action( 'rest_api_init', array( $this->rest_api, 'register_routes' ), 5 );
 	}
 
 	/**
@@ -211,26 +229,42 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	}
 
 	/**
-	 * Install everything needed.
+	 * Setup everything needed on plugin activation.
 	 */
-	public static function install() {
+	public static function activate( $network_wide = false ) {
 
 		// Make sure the needed user role exists.
-		Backstage::maybe_create_user_role();
+		Backstage::maybe_create_user_role( $network_wide );
 
 		// Make sure that the needed user exists.
-		Backstage::maybe_create_customizer_user();
+		Backstage::maybe_create_customizer_user( $network_wide );
+	}
+
+	/**
+	 * Remove anything related to the user and capabilities on plugin deactivation.
+	 */
+	public static function deactivate( $network_deactivating = false ) {
+
+		// Make sure that the user is removed.
+		Backstage::maybe_remove_customizer_user( $network_deactivating );
+
+		// Make sure that the user role is removed.
+		Backstage::maybe_remove_user_role( $network_deactivating );
 	}
 
 	/**
 	 * Uninstall everything we added.
 	 */
 	public static function uninstall() {
+
+		// If we are in a multisite installation, we need to remove data from all the sites.
+		$network_wide = is_multisite();
+
 		// Make sure that the user is removed.
-		Backstage::maybe_remove_customizer_user();
+		Backstage::maybe_remove_customizer_user( $network_wide );
 
 		// Make sure that the user role is removed.
-		Backstage::maybe_remove_user_role();
+		Backstage::maybe_remove_user_role( $network_wide );
 
 		// Remove any data saved in the DB.
 		Backstage_Settings::cleanup();
@@ -246,12 +280,21 @@ final class Backstage_Plugin extends Backstage_Plugin_Init {
 	}
 
 	/**
-	 * Get the plugin main file.
+	 * Get the plugin main file absolute path.
 	 *
 	 * @return string
 	 */
 	public function get_file() {
 		return $this->file;
+	}
+
+	/**
+	 * Get the plugin basename (`directory/main_file.php`) that uniquely identifies each plugin.
+	 *
+	 * @return string
+	 */
+	public function get_basename() {
+		return plugin_basename( $this->file );
 	}
 
 	/**

@@ -10,9 +10,11 @@
 /**
  * Get the link for visitors to auto-login and access the Customizer.
  *
+ * @param string|bool $return_url Optional. The return URL to use for the Customizer back button. Defaults to current frontend URL.
+ * @param string|bool $button_text Optional. Custom button text to use for the Customizer back button.
  * @return string
  */
-function backstage_get_customizer_link() {
+function backstage_get_customizer_link( $return_url = false, $button_text = false) {
 	global $wp;
 
 	// This should not be used in the admin.
@@ -25,16 +27,27 @@ function backstage_get_customizer_link() {
 		$auto_login_key = Backstage::$default_auto_login_key;
 	}
 
-	// First, get the current frontend URL.
-	$current_url = home_url( add_query_arg( array(), $wp->request ) );
+	if ( empty( $return_url ) ) {
+		// Get the current frontend URL.
+		$return_url = home_url( add_query_arg( array(), $wp->request ) );
+	}
 
 	// Now get the Customizer URL.
 	$link = wp_customize_url();
 	// Next we need to add our own parameters to it, including the return URL (the current page).
-	$auto_login_hash = wp_hash( $current_url );
+	$auto_login_hash = wp_hash( $return_url );
 
 	$link = add_query_arg( $auto_login_key, urlencode( $auto_login_hash ), $link );
-	$link = add_query_arg( 'return_url', urlencode( $current_url ), $link );
+	$link = add_query_arg( 'return_url', urlencode( $return_url ), $link );
+
+	if ( ! empty( $button_text ) ) {
+		// Sanitize it
+		$button_text = esc_html( $button_text );
+		if ( ! empty( $button_text ) ) {
+			// Put it in the link
+			$link = add_query_arg( 'button_text', urlencode( $button_text ), $link );
+		}
+	}
 
 	return apply_filters( 'backstage_get_customizer_link', $link );
 }
