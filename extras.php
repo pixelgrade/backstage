@@ -53,7 +53,7 @@ function backstage_get_customizer_link( $return_url = false, $button_text = fals
 }
 
 /**
- * Check if current logged in user is the user user by the plugin.
+ * Check if current logged in user is the user used by the plugin.
  *
  * @return bool
  */
