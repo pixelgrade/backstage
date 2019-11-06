@@ -1,15 +1,15 @@
 <?php
 /**
  * @wordpress-plugin
- * Plugin Name: Backstage
- * Plugin URI:  https://wordpress.org/plugins/customizer-guest-demo-access
+ * Plugin Name: Backstage – Customizer Demo Access
+ * Plugin URI:  https://wordpress.org/plugins/backstage/
  * Description: Customizer Demo Access for Everyone
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: Pixelgrade
  * Author URI: https://pixelgrade.com
  * Author Email: contact@pixelgrade.com
  * Requires at least: 4.9.0
- * Tested up to: 5.2.3
+ * Tested up to: 5.3.0
  * Text Domain: backstage
  * License:     GPL-2.0 or later.
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -35,7 +35,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'extras.php' );
 function Backstage_Plugin() {
 	require_once( plugin_dir_path( __FILE__ ) . 'includes/class-Backstage_Plugin.php' );
 
-	return Backstage_Plugin::getInstance( __FILE__, '1.3.0' );
+	return Backstage_Plugin::getInstance( __FILE__, '1.4.0' );
 }
 
 Backstage_Plugin();
