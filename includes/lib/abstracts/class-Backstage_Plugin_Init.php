@@ -151,7 +151,7 @@ abstract class Backstage_Plugin_Init extends Backstage_Singleton_Registry {
 
 		foreach ( $this->new_versions as $new_version ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' .
-			     sprintf( __( 'The <strong>%s</strong> plugin has been updated to version %s. Enjoy!', 'backstage' ), $this->plugin_name, $new_version ) .
+			     sprintf( __( 'The <strong>%1$s</strong> plugin has been updated to version %2$s. Enjoy!', 'backstage' ), $this->plugin_name, $new_version ) .
 			     '</p></div>';
 		}
 	}
