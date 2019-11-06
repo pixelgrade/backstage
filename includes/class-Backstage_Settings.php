@@ -193,6 +193,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 				'required'               => false,
 				'data-conditional-id'    => $this->prefix( 'inject_custom_code' ),
 				'data-conditional-value' => 'on',
+				'data-conditional-persist' => true,
 
 				'data-codeeditor' => json_encode( array(
 					'codemirror' => array(
@@ -212,6 +213,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 				'required'               => false,
 				'data-conditional-id'    => $this->prefix( 'inject_custom_code' ),
 				'data-conditional-value' => 'on',
+				'data-conditional-persist' => true,
 
 				'data-codeeditor' => json_encode( array(
 					'codemirror' => array(
@@ -272,6 +274,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 				'required'               => false,
 				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'auto',
+				'data-conditional-persist' => true,
 			),
 		) );
 		$cmb->add_field( array(
@@ -284,6 +287,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 				'required'               => false,
 				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'auto',
+				'data-conditional-persist' => true,
 			),
 		) );
 
@@ -305,6 +309,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 				'required'               => true, // Will be required only if visible.
 				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'custom',
+				'data-conditional-persist' => true,
 
 				'data-codeeditor' => json_encode( array(
 					'codemirror' => array(
@@ -359,6 +364,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 				'required'               => false,
 				'data-conditional-id'    => $this->prefix( 'frontend_button_mode' ),
 				'data-conditional-value' => 'custom',
+				'data-conditional-persist' => true,
 
 				'data-codeeditor' => json_encode( array(
 					'codemirror' => array(
@@ -459,6 +465,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 			'attributes' => array(
 				'data-conditional-id'    => $this->prefix( 'enable_rest_api_secret_key' ),
 				'data-conditional-value' => 'on',
+				'data-conditional-persist' => true,
 			),
 		) );
 

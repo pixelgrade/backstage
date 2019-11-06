@@ -63,9 +63,13 @@ if ( ! function_exists( 'cmb2_conditional_filter_data_to_save' ) ) {
 			$field_id       = $field_args['id'];
 			$conditional_id = $field_args['attributes']['data-conditional-id'];
 
-			if (
-			array_key_exists( 'data-conditional-value', $field_args['attributes'] )
-			) {
+			// This is a Pixelgrade addition!
+			if ( ! empty( $field_args['attributes']['data-conditional-persist'] ) ) {
+				// The value for this field needs to be saved no matter the conditional config.
+				continue;
+			}
+
+			if ( array_key_exists( 'data-conditional-value', $field_args['attributes'] ) ) {
 				$conditional_value = $field_args['attributes']['data-conditional-value'];
 
 				$conditional_value = ( $decoded_conditional_value = @json_decode( $conditional_value ) ) ? $decoded_conditional_value : $conditional_value;

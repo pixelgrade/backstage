@@ -115,6 +115,7 @@ The plugin provides *actions and filters* in all the right places allowing you t
 * Added support for injecting custom CSS and JS in the Customizer.
 * Added support for UTF-8 characters in the button text.
 * Added support for extra query arguments to the REST API endpoint.
+* Made sure that settings data in conditionally hidden fields is persistent so you wouldn't lose you custom code.
 
 = 1.3 =
 * 2019-10-08
