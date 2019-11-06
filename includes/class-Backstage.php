@@ -559,20 +559,23 @@ class Backstage extends Backstage_Singleton_Registry {
 	}
 
 	/**
-	 * Register Customizer admin scripts.
+	 * Register Customizer admin styles and scripts.
 	 */
 	public function register_admin_customizer_scripts() {
+
+		wp_register_style( backstage_prefix('customizer' ), plugins_url( 'assets/css/customizer.css', Backstage_Plugin()->get_file() ), array(), Backstage_Plugin()->get_version() );
 
 		wp_register_script( backstage_prefix('customizer' ), plugins_url( 'assets/js/customizer.js', Backstage_Plugin()->get_file() ), array( 'jquery', 'customize-controls' ), Backstage_Plugin()->get_version() );
 	}
 
 	/**
-	 * Enqueue Customizer admin scripts
+	 * Enqueue Customizer admin styles and scripts
 	 */
 	public function enqueue_admin_customizer_scripts() {
 
 		if ( $this->is_customizer_user() ) {
-			// Enqueue the needed scripts, already registered.
+			// Enqueue the needed styles and scripts, already registered.
+			wp_enqueue_style( backstage_prefix( 'customizer' ) );
 			wp_enqueue_script( backstage_prefix( 'customizer' ) );
 
 			wp_localize_script( backstage_prefix( 'customizer' ), 'backstage', apply_filters( 'backstage_customizer_localized_data', array(
@@ -583,6 +586,18 @@ class Backstage extends Backstage_Singleton_Registry {
 				'notice_dismissible' => Backstage_Plugin()->settings->get_option( 'customizer_notice_dismissible', false ),
 				'hide_info' => Backstage_Plugin()->settings->get_option( 'customizer_hide_info', false ),
 			) ) );
+
+			if ( Backstage_Plugin()->settings->get_option( 'inject_custom_code', false ) ) {
+				$custom_css = Backstage_Plugin()->settings->get_option( 'customizer_custom_css', '' );
+				if ( ! empty( $custom_css ) ) {
+					wp_add_inline_style( backstage_prefix( 'customizer' ), $custom_css );
+				}
+
+				$custom_js = Backstage_Plugin()->settings->get_option( 'customizer_custom_js', '' );
+				if ( ! empty( $custom_js ) ) {
+					wp_add_inline_script( backstage_prefix( 'customizer' ), $custom_js );
+				}
+			}
 		}
 	}
 

@@ -176,6 +176,51 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 			'type' => 'checkbox',
 		) );
 
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Inject Custom CSS/JS', 'backstage' ),
+			'desc' => esc_html__( 'Provide custom CSS and/or JS that will get injected in the Customizer (not the preview window) when a Backstage logged in user is browsing.', 'backstage' ),
+			'id'   => $this->prefix( 'inject_custom_code' ),
+			'type' => 'checkbox',
+		) );
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Custom CSS', 'backstage' ),
+			'desc' => esc_html__( 'Add here the custom CSS you want to output in the Customizer.', 'backstage' ),
+			'id'   => $this->prefix( 'customizer_custom_css' ),
+			'type' => 'textarea_code',
+			'default' => '',
+			'attributes' => array(
+				'required'               => false,
+				'data-conditional-id'    => $this->prefix( 'inject_custom_code' ),
+				'data-conditional-value' => 'on',
+
+				'data-codeeditor' => json_encode( array(
+					'codemirror' => array(
+						'mode' => 'text/css',
+					),
+				) ),
+			),
+		) );
+
+		$cmb->add_field( array(
+			'name' => esc_html__( 'Custom JS', 'backstage' ),
+			'desc' => esc_html__( 'Add here the custom JS you want to output in the Customizer. No need to add the script tags.', 'backstage' ),
+			'id'   => $this->prefix( 'customizer_custom_js' ),
+			'type' => 'textarea_code',
+			'default' => '',
+			'attributes' => array(
+				'required'               => false,
+				'data-conditional-id'    => $this->prefix( 'inject_custom_code' ),
+				'data-conditional-value' => 'on',
+
+				'data-codeeditor' => json_encode( array(
+					'codemirror' => array(
+						'mode' => 'text/javascript',
+					),
+				) ),
+			),
+		) );
+
 		/* ================================
 		 * Fields for frontend output.
 		 * ================================ */

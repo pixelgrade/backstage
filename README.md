@@ -60,6 +60,27 @@ If you identify any errors or have an idea for improving the plugin, please open
 
 If Github is not your thing but you are passionate about Backstage and want to help us make it better, don't hesitate to [reach us](https://pixelgrade.com/contact/).
 
+## Getting the access URL remotely
+
+If you want to provide your visitors with a link to access the Customizer from outside the WordPress installation, you can activate the REST API endpoint from the plugins settings. Optionally, you can secure the endpoint with a private secret key that should not be shared publicly.
+
+You can send the following parameters to the endpoint:
+
+```json
+{
+  "return_url": "https://google.com",
+  "button_text": "Some text 🏀",
+  "extra_query_args": {
+    "autofocus[panel]": "theme_options_panel"
+  },
+  "secret_key": "thesecretkey"
+}
+```
+
+The `secret_key` parameter is required only if you have activated it via the plugin settings.
+
+The `extra_query_args` allow you to provide additional parameters to the Customizer URL like autofocusing on a specific panel or section, markers that you need for some custom logic you've added in the Customizer, etc. 
+
 ## Frequently Asked Questions
 
 ### Is this safe to use in production?
@@ -92,6 +113,12 @@ The plugin provides actions and filters in all the right places allowing you int
 * [CMB2 Conditionals](https://github.com/jcchavezs/cmb2-conditionals/) plugin for CMB2 - License: GPLv2 or later
 
 ## Changelog
+
+### 1.4.0
+_2019-11-06_
+* Added support for injecting custom CSS and JS in the Customizer.
+* Added support for UTF-8 characters in the button text.
+* Added support for extra query arguments to the REST API endpoint
 
 ### 1.3.0
 _2019-10-08_
