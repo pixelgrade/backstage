@@ -12,9 +12,10 @@
  *
  * @param string|bool $return_url Optional. The return URL to use for the Customizer back button. Defaults to current frontend URL.
  * @param string|bool $button_text Optional. Custom button text to use for the Customizer back button.
+ * @param array $extra_query_args Optional. Extra args to add to the URL.
  * @return string
  */
-function backstage_get_customizer_link( $return_url = false, $button_text = false) {
+function backstage_get_customizer_link( $return_url = false, $button_text = false, $extra_query_args = array() ) {
 	global $wp;
 
 	// This should not be used in the admin.
@@ -37,15 +38,21 @@ function backstage_get_customizer_link( $return_url = false, $button_text = fals
 	// Next we need to add our own parameters to it, including the return URL (the current page).
 	$auto_login_hash = wp_hash( $return_url );
 
-	$link = add_query_arg( $auto_login_key, urlencode( $auto_login_hash ), $link );
-	$link = add_query_arg( 'return_url', urlencode( $return_url ), $link );
+	$link = add_query_arg( $auto_login_key, rawurlencode( $auto_login_hash ), $link );
+	$link = add_query_arg( 'return_url', rawurlencode( $return_url ), $link );
 
 	if ( ! empty( $button_text ) ) {
 		// Sanitize it
 		$button_text = esc_html( $button_text );
 		if ( ! empty( $button_text ) ) {
 			// Put it in the link
-			$link = add_query_arg( 'button_text', urlencode( $button_text ), $link );
+			$link = add_query_arg( 'button_text', rawurlencode( utf8_uri_encode( $button_text ) ), $link );
+		}
+	}
+
+	if ( ! empty( $extra_query_args ) && is_array( $extra_query_args ) && ! wp_is_numeric_array( $extra_query_args ) ) {
+		foreach ( $extra_query_args as $key => $value ) {
+			$link = add_query_arg( rawurlencode( $key ), rawurlencode( utf8_uri_encode( $value ) ), $link );
 		}
 	}
 

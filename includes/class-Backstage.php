@@ -377,17 +377,20 @@ class Backstage extends Backstage_Singleton_Registry {
 
 				do_action( 'backstage_did_auto_login' );
 
-				// We will put the return URL in the url key because the return_url key is used by the Customizer logic and we want to avoid collisions.
-				$url = add_query_arg( 'url', $_GET['return_url'], admin_url( 'customize.php' ) );
+				// We already know this URL is for the Customizer.
+				// We want to use it since it might have additional query args and we don't want to lose those.
+				$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
-				if ( ! empty( $_GET['button_text'] ) ) {
-					$url = add_query_arg( 'button_text', $_GET['button_text'], $url );
-				}
+				// Remove the auto_login key
+				$current_url = remove_query_arg( $this->get_auto_login_key(), $current_url );
+
+				// We will put the return URL in the url key because the return_url key is used by the Customizer logic and we want to avoid collisions.
+				$current_url = add_query_arg( 'url', rawurlencode( rawurldecode( $_GET['return_url'] ) ), remove_query_arg( 'return_url', $current_url ) );
 
 				// Allow others to have say in this.
-				$url = apply_filters( 'backstage_auto_login_redirect_url', $url );
+				$url = apply_filters( 'backstage_auto_login_redirect_url', $current_url );
 
-				wp_safe_redirect( esc_url( $url ) );
+				wp_safe_redirect( esc_url_raw( $url ) );
 				die();
 			}
 		}
@@ -455,10 +458,7 @@ class Backstage extends Backstage_Singleton_Registry {
 	 */
 	protected function check_customizer_link() {
 
-		$auto_login_key = Backstage_Plugin()->settings->get_option( 'auto_login_key' );
-		if ( empty( $auto_login_key ) ) {
-			$auto_login_key = self::$default_auto_login_key;
-		}
+		$auto_login_key = $this->get_auto_login_key();
 
 		// We really need the parameters to be present present
 		if ( empty( $_GET[ $auto_login_key ] ) || empty(  $_GET['return_url'] ) ) {
@@ -479,6 +479,15 @@ class Backstage extends Backstage_Singleton_Registry {
 		}
 
 		return true;
+	}
+
+	public function get_auto_login_key() {
+		$auto_login_key = Backstage_Plugin()->settings->get_option( 'auto_login_key' );
+		if ( empty( $auto_login_key ) ) {
+			$auto_login_key = self::$default_auto_login_key;
+		}
+
+		return $auto_login_key;
 	}
 
 	/**
@@ -567,8 +576,8 @@ class Backstage extends Backstage_Singleton_Registry {
 			wp_enqueue_script( backstage_prefix( 'customizer' ) );
 
 			wp_localize_script( backstage_prefix( 'customizer' ), 'backstage', apply_filters( 'backstage_customizer_localized_data', array(
-				'button_text'    => esc_html( ! empty( $_GET['button_text'] ) ? $_GET['button_text'] : Backstage_Plugin()->settings->get_option( 'customizer_back_button_text', __( 'Back to Demo', 'backstage' ) ) ),
-				'button_link'    => esc_url( ! empty( $_GET['url'] ) ? $_GET['url'] : get_home_url() ),
+				'button_text'    => esc_html( ! empty( $_GET['button_text'] ) ? rawurldecode( $_GET['button_text'] ) : Backstage_Plugin()->settings->get_option( 'customizer_back_button_text', __( 'Back to Demo', 'backstage' ) ) ),
+				'button_link'    => esc_url( ! empty( $_GET['url'] ) ? rawurldecode( $_GET['url'] ) : get_home_url() ),
 				'notice_type' => esc_attr( trim(  Backstage_Plugin()->settings->get_option( 'customizer_notice_type', 'info' ) ) ),
 				'notice_text' => trim( Backstage_Plugin()->settings->get_option( 'customizer_notice_text', __( '<b>Demo Mode</b><p>You can\'t upload images and save settings.</p>', 'backstage' ) ) ),
 				'notice_dismissible' => Backstage_Plugin()->settings->get_option( 'customizer_notice_dismissible', false ),

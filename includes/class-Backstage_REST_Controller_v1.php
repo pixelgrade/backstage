@@ -24,6 +24,13 @@ class Backstage_REST_Controller_v1 extends WP_REST_Controller {
 					'description'       => esc_html__( 'A custom text for the back button in the Customizer, to overwrite the one set in the plugin\'s settings just when using this link.', 'backstage' ),
 					'default'           => '',
 				),
+				'extra_query_args' => array(
+					'required'          => false,
+					'type'              => 'array',
+					'sanitize_callback' => array( 'Backstage_REST_Controller_v1', 'sanitize_extra_query_args' ),
+					'description'       => esc_html__( 'Extra query args to add to the URL. This must be an associative array with the key being the parameter name.', 'backstage' ),
+					'default'           => array(),
+				),
 			);
 
 			// Add the required secret_key param if the secret key check is enabled.
@@ -94,11 +101,16 @@ class Backstage_REST_Controller_v1 extends WP_REST_Controller {
 			$button_text = $params['button_text'];
 		}
 
+		$extra_query_args = array();
+		if ( ! empty( $params['extra_query_args'] ) ) {
+			$extra_query_args = $params['extra_query_args'];
+		}
+
 		return rest_ensure_response( array(
 			'code'    => 'success',
 			'message' => '',
 			'data'    => array(
-				'url' => backstage_get_customizer_link( $return_url, $button_text ),
+				'url' => backstage_get_customizer_link( $return_url, $button_text, $extra_query_args ),
 			),
 		) );
 	}
@@ -140,5 +152,30 @@ class Backstage_REST_Controller_v1 extends WP_REST_Controller {
 	 */
 	public static function sanitize_text_field( $text, $request, $param ) {
 		return sanitize_text_field( $text );
+	}
+
+	/**
+	 * Make sure that we get safe extra query args.
+	 *
+	 * @param $extra_query_args
+	 * @param $request
+	 * @param $param
+	 *
+	 * @return array
+	 */
+	public static function sanitize_extra_query_args( $extra_query_args, $request, $param ) {
+		if ( ! is_array( $extra_query_args ) || wp_is_numeric_array( $extra_query_args ) ) {
+			return array();
+		}
+
+		$sanitized = array();
+		foreach( $extra_query_args as $key => $value ) {
+			$key = sanitize_text_field( $key );
+			$value = sanitize_text_field( $value );
+
+			$sanitized[ $key ] = $value;
+		}
+
+		return $sanitized;
 	}
 }
