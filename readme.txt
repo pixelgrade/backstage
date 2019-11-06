@@ -1,10 +1,10 @@
 === Backstage - Customizer Demo Access ===
 Contributors: pixelgrade, vlad.olaru
-Tags: customizer, demo, guest access, theme preview, site customization, sandbox, preview options
+Tags: customizer, demo, guest access, theme preview, site customization, sandbox, preview options, theme options, theme shop
 Requires at least: 4.9.0
-Tested up to: 5.2.3
+Tested up to: 5.3.0
 Requires PHP: 5.4.0
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,6 +109,12 @@ The plugin provides *actions and filters* in all the right places allowing you t
 * [CMB2 Conditionals](https://github.com/jcchavezs/cmb2-conditionals/) plugin for CMB2 - License: GPLv2 or later
 
 == Changelog ==
+
+= 1.4 =
+* 2019-11-06
+* Added support for injecting custom CSS and JS in the Customizer.
+* Added support for UTF-8 characters in the button text.
+* Added support for extra query arguments to the REST API endpoint.
 
 = 1.3 =
 * 2019-10-08
