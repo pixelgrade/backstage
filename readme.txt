@@ -4,7 +4,7 @@ Tags: customizer, demo, guest access, theme preview, site customization, sandbox
 Requires at least: 4.9.0
 Tested up to: 5.3.0
 Requires PHP: 5.4.0
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPL v2.0 (or later)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,6 +109,10 @@ The plugin provides *actions and filters* in all the right places allowing you t
 * [CMB2 Conditionals](https://github.com/jcchavezs/cmb2-conditionals/) plugin for CMB2 - License: GPLv2 or later
 
 == Changelog ==
+
+= 1.4.1 =
+* 2019-11-07
+* Allow POST method also for REST API endpoint.
 
 = 1.4 =
 * 2019-11-06

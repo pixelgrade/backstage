@@ -114,6 +114,10 @@ The plugin provides actions and filters in all the right places allowing you int
 
 ## Changelog
 
+## 1.4.1
+_2019-11-07_
+* Allow POST method also for REST API endpoint.
+
 ### 1.4.0
 _2019-11-06_
 * Added support for injecting custom CSS and JS in the Customizer.
