@@ -201,6 +201,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 					),
 				) ),
 			),
+			'sanitization_cb' => array( $this, 'sanitize_custom_code' ),
 		) );
 
 		$cmb->add_field( array(
@@ -221,6 +222,7 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 					),
 				) ),
 			),
+			'sanitization_cb' => array( $this, 'sanitize_custom_code' ),
 		) );
 
 		/* ================================
@@ -469,6 +471,11 @@ class Backstage_Settings extends Backstage_Singleton_Registry {
 			),
 		) );
 
+	}
+
+	public function sanitize_custom_code( $value ) {
+		// We don't want any sanitization done.
+		return $value;
 	}
 
 	protected function get_rest_api_default_secret_key() {
