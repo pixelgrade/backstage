@@ -44,7 +44,7 @@ class Backstage_REST_Controller_v1 extends WP_REST_Controller {
 			}
 
 			register_rest_route( Backstage_REST_Controller_v1::REST_NAMESPACE, '/' . Backstage_REST_Controller_v1::REST_FRONT_BASE . '/customizer_link', array(
-				'methods'       => WP_REST_Server::READABLE,
+				'methods'       => array( WP_REST_Server::READABLE, WP_REST_Server::CREATABLE ), // We allow both to make sure that users can get around issues with GET and multidimensional arrays as parameters.
 				'callback'      => array( $this, 'get_customizer_link' ),
 				'permission_callback' => array( $this, 'get_customizer_link_permissions_check' ),
 				'args'          => $args,
