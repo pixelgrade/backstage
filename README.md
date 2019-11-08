@@ -114,6 +114,10 @@ The plugin provides actions and filters in all the right places allowing you int
 
 ## Changelog
 
+### 1.4.2
+_2019-11-08_
+* Prevent aggressive sanitization for custom code fields.
+
 ## 1.4.1
 _2019-11-07_
 * Allow POST method also for REST API endpoint.

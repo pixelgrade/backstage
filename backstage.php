@@ -4,7 +4,7 @@
  * Plugin Name: Backstage – Customizer Demo Access
  * Plugin URI:  https://wordpress.org/plugins/backstage/
  * Description: Customizer Demo Access for Everyone
- * Version: 1.4.1
+ * Version: 1.4.2
  * Author: Pixelgrade
  * Author URI: https://pixelgrade.com
  * Author Email: contact@pixelgrade.com
@@ -35,7 +35,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'extras.php' );
 function Backstage_Plugin() {
 	require_once( plugin_dir_path( __FILE__ ) . 'includes/class-Backstage_Plugin.php' );
 
-	return Backstage_Plugin::getInstance( __FILE__, '1.4.1' );
+	return Backstage_Plugin::getInstance( __FILE__, '1.4.2' );
 }
 
 Backstage_Plugin();
